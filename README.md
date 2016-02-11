@@ -1,1 +1,2 @@
-# computer-vision-1
+# Computer Vision 1
+#### Assignments - VU MSc AI
