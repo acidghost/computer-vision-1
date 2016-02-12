@@ -4,25 +4,36 @@ function img = convert_color_space( image_name, color_space )
 img = imread(image_name);
 
 % convert image into given c. s.
+converted = zeros(size(img));
 if strcmp(color_space, 'opponent');
     % convert to opponent color space
+    R = img(:, :, 1);
+    G = img(:, :, 2);
+    B = img(:, :, 3);
+    converted(:, :, 1) = (R - G) / sqrt(2);
+    converted(:, :, 2) = (R + G - 2 * B) / sqrt(6);
+    converted(:, :, 3) = (R + G + B) / sqrt(3);
 elseif strcmp(color_space, 'rgb');
     % convert to rgb color space
+    for i=1:3;
+        converted(:, :, i) = img(:,:,i) ./ (img(:,:,1) + img(:,:,2) + img(:,:,3));
+    end
 elseif strcmp(color_space, 'hsv');
     % convert to HSV
-    img = rgb2hsv(img);
+    converted = rgb2hsv(img);
 else
     error('Invalid color space %s\n', color_space);
 end
 
 % display the channels separately
 figure
-subplot(1, 3, 1)
-imshow(img(:,:,1))
-subplot(1, 3, 2)
-imshow(img(:,:,2))
-subplot(1, 3, 3)
-imshow(img(:,:,3))
+subplot(3, 1, 1)
+imshow(converted(:,:,1))
+title(sprintf('RGB to %s conversion', color_space))
+subplot(3, 1, 2)
+imshow(converted(:,:,2))
+subplot(3, 1, 3)
+imshow(converted(:,:,3))
 
 end
 
