@@ -7,26 +7,37 @@ sp2 = imread('sphere2.png');
 sp3 = imread('sphere3.png');
 sp4 = imread('sphere4.png');
 sp5 = imread('sphere5.png');
+
 n_sources = 5;
-sources = zeros(size(sp1, 1), size(sp1, 2), n_sources);
+nrows = size(sp1, 1);
+ncols = size(sp1, 2);
+
+sources = zeros(nrows, ncols, n_sources);
 sources(:, :, 1) = sp1(:,:);
 sources(:, :, 2) = sp2(:,:);
 sources(:, :, 3) = sp3(:,:);
 sources(:, :, 4) = sp4(:,:);
 sources(:, :, 5) = sp5(:,:);
 
-light_distance = 10000;
-to_center = 120;
-v1 = [size(sp1) / 2, light_distance]';
-v2 = [size(sp2) - to_center, light_distance]';
-v3 = [size(sp3, 1) - to_center, to_center, light_distance]';
-v4 = [to_center, size(sp4, 2) - to_center, light_distance]';
-v5 = [to_center, to_center, light_distance]';
+light_distance = 2200;
+light_frontal_height = 1700;
+light_height = 165;
+
+% center
+v1 = [ nrows / 2; ncols / 2; light_frontal_height ];
+% bottom-right
+v2 = [ nrows + light_distance; ncols + light_distance; light_height ];
+% bottom-left
+v3 = [ nrows + light_distance; -light_distance; light_height ];
+% top-right
+v4 = [ -light_distance; ncols + light_distance; light_height ];
+% top-left
+v5 = [ -light_distance; -light_distance; light_height ];  
 
 V = [v1'; v2'; v3'; v4'; v5'];
 
-normals = zeros(size(sp1, 1), size(sp1, 2), 3);
-albedos = zeros(size(sp1, 1), size(sp2, 2));
+normals = zeros(nrows, ncols, 3);
+albedos = zeros(nrows, ncols);
 for x=1:size(sp1, 1);
     for y=1:size(sp1, 2);
         % stack image values into array i
@@ -40,20 +51,30 @@ for x=1:size(sp1, 1);
             I(k, k) = i(k);
         end
         % solve for g
-        g = pinv(I * V) * (I * i);
-        albedo = norm(g);
-        albedos(x, y) = albedo;
-        normal = g ./ albedo;
-        normals(x, y, :) = normal;
+        A = I * V;
+        b = I * i;
+        g = pinv(A) * b;
+        
+        albedos(x, y) = norm(g);
+        normals(x, y, :) = g ./ albedos(x, y);
     end
 end
 
-figure
-[X, Y] = meshgrid(1:size(sp1, 1), 1:size(sp1, 2));
-quiver3(X, Y, albedos, normals(:, :, 1), normals(:, :, 2), normals(:, :, 3));
+% if the albedo is not in the range [0, 1], then V might be incorrect
+if max(max(albedos)) > 1 || min(min(albedos)) < 0
+    error('Albedo values not in [0, 1]');
+end
 
-max(max(albedos))
-min(min(albedos))
+% show recovered albedo
+figure
+imshow(albedos, [])
+title('Recovered albedo')
+
+% show normal map
+figure
+[X, Y] = meshgrid(1:nrows, 1:ncols);
+quiver3(X, Y, albedos, normals(:, :, 1), normals(:, :, 2), normals(:, :, 3))
+title('Normal map image')
 
 end
 
