@@ -56,7 +56,11 @@ for x=1:size(sp1, 1);
         g = pinv(A) * b;
         
         albedos(x, y) = norm(g);
-        normals(x, y, :) = g ./ albedos(x, y);
+        if albedos(x, y) == 0;
+            normals(x, y, :) = [0 0 0];
+        else
+            normals(x, y, :) = g / albedos(x, y);
+        end
     end
 end
 
@@ -72,9 +76,44 @@ title('Recovered albedo')
 
 % show normal map
 figure
-[X, Y] = meshgrid(1:nrows, 1:ncols);
-quiver3(X, Y, albedos, normals(:, :, 1), normals(:, :, 2), normals(:, :, 3))
+Un = normals(:, :, 1);
+Vn = normals(:, :, 2);
+Wn = normals(:, :, 3);
+
+% mask = albedos > 0.05;
+% ar = reshape(albedos(mask), [nrows ncols]);
+% ur = reshape(Un(mask), [nrows ncols]);
+% vr = reshape(Vn(mask), [nrows ncols]);
+% wr = reshape(Wn(mask), [nrows ncols]);
+% quiver3(ar, ur, vr, wr, 'AutoScale', 'off', 'AutoScaleFactor', 10)
+
+quiver3(albedos, Un, Vn, Wn, 'AutoScale', 'off', 'AutoScaleFactor', 10)
+
+view(-35,45)
 title('Normal map image')
+
+
+% reconstruct height map
+height_map = zeros(nrows, ncols);
+for y=2:nrows;
+    q = Vn(y, 1) / Wn(y, 1);
+    if isnan(q);
+        q = 0;
+    end
+    height_map(y, 1) = height_map(y-1, 1) + q;
+end
+for y=1:nrows;
+    for x=2:ncols;
+        p = Un(y, x) / Wn(y, x);
+        if isnan(p);
+            p = 0;
+        end
+        height_map(y, x) = height_map(y, x-1) + p;
+    end
+end
+
+figure
+surfl(height_map); shading interp; colormap gray
 
 end
 
