@@ -1,0 +1,23 @@
+NOTE: 
+So I have a theory as to what's the problem. The way we have it right now our light 
+sources vectors represent the directions but not the intensity of the sources (see
+http://www.cs.toronto.edu/~fleet/courses/2503/fall11/Handouts/a1.pdf near the bottom 
+of the first page). To reflect that they have the same intensity they all should 
+have the same magnitud/norm. I think that will also make all the sources to be weighted 
+"equally", if that makes sense ... I think that's also why the albedo figure still 
+has some bright spots. Some sources are brighter and they affect the computation 
+of the albedo.
+
+Additionally, the assignment says the light sources must be "directional (unit) 
+vectors (...) yielded to a scale factor", so I thought we had to normalize them first
+to make sure they all have same intensity, and then scale them to experiment. 
+
+So with that in mind I've been printing the V matrix and I noticed that once we 
+normalize the vectors don't represent the coordinates in the same way. I tried to 
+find a way to keep both properties 
+- all v must have the same magnitud/norm (ideally 1)
+- the relative coordinates should mantain (i.e [1/sqrt(2), 1/sqrt(2), 0] for the 
+frontal)
+
+second problem is, everytime I ran it with unit vectors the albedos were outside the 
+[0,1] range.
