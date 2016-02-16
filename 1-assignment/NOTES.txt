@@ -21,3 +21,33 @@ frontal)
 
 second problem is, everytime I ran it with unit vectors the albedos were outside the 
 [0,1] range.
+
+
+-----------------------------------------------------------------------------------
+figure 1: same V vectors as before
+ 	256         256        1700
+        2712        2712         165
+        2712       -2200         165
+       -2200        2712         165
+       -2200       -2200         165
+
+figure 4: last 4 sources with coordinates +/-1
+   256   256     1
+     1     1     1
+     1    -1     1
+    -1     1     1
+    -1    -1     1
+
+figure 6: shift coordinate system to origin in middle of the image
+     0     0     1
+     1     1     1
+     1    -1     1
+    -1     1     1
+    -1    -1     1
+
+figure 2: normalize 
+         0         0    1.0000
+    0.5774    0.5774    0.5774
+    0.5774   -0.5774    0.5774
+   -0.5774    0.5774    0.5774
+   -0.5774   -0.5774    0.5774

@@ -1,7 +1,7 @@
 function photometric_stereo( )
 %PHOTOMETRIC_STEREO Implement the photometric stereo algorithm, which aims
-%to recover a patch of surface from multiple pictures under different light
-%sources. 
+%to recover a patch of surf
+Implement the photometric stereo algorithm, which aims to recover a patch of surface from multiple pictures under different light sources.
 %Detailed explanation goes here
     % Assumes five different light sources, all far away, with frontal, 
     % left-above, right-above, right-below, and left-below directions.
@@ -31,19 +31,19 @@ light_frontal_depth = 1;
 light_depth = 1; 
 
 % frontal
-v1 = [ 0; 0; -light_frontal_depth ];
+v1 = [ 0; 0; light_frontal_depth ];
 v1 = v1/norm(v1);
 % bottom-right
-v2 = [ +light_distance; -light_distance; -light_depth ];
+v2 = [ +light_distance; +light_distance; light_depth ];
 v2 = v2/norm(v2);
 % bottom-left
-v3 = [ -light_distance; -light_distance; -light_depth ];
+v3 = [ +light_distance; -light_distance; light_depth ];
 v3 = v3/norm(v3);
 % top-right
-v4 = [ +light_distance; +light_distance; -light_depth ];
+v4 = [ -light_distance; +light_distance; light_depth ];
 v4 = v4/norm(v4);
 % top-left
-v5 = [ -light_distance; +light_distance; -light_depth ];
+v5 = [ -light_distance; -light_distance; light_depth ];
 v5 = v5/norm(v5);
 
 % STEP 3: Determine matrix V from light sources
@@ -64,11 +64,10 @@ for x=1:size(sp1, 1);
             I(k, k) = i(k);
         end
         % STEP 7: Solve for g
-        A =  I * V;
-        b =  I * i;
-        g = pinv(A) * b;
-        %g = linsolve(A,b);
-        %g = mldivide(A, b);
+        A = I * V;
+        b = I * i;
+        %g = pinv(A) * b;
+        g = linsolve(A,b);
         % STEP 8: calculate albedo
         albedos(x, y) = norm(g);
         % STEP 9: calculate normals
