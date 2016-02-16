@@ -1,17 +1,17 @@
 function photometric_stereo( )
 %PHOTOMETRIC_STEREO Implement the photometric stereo algorithm, which aims
-%to recover a patch of surf
-Implement the photometric stereo algorithm, which aims to recover a patch of surface from multiple pictures under different light sources.
+%to recover a patch of surface from multiple pictures under different light
+%sources. 
 %Detailed explanation goes here
     % Assumes five different light sources, all far away, with frontal, 
     % left-above, right-above, right-below, and left-below directions.
 
 % STEP 1: Read images and store them all together in a matrix
-sp1 = imread('sphere1.png');
-sp2 = imread('sphere2.png');
-sp3 = imread('sphere3.png');
-sp4 = imread('sphere4.png');
-sp5 = imread('sphere5.png');
+sp1 = im2double(imread('sphere1.png'));
+sp2 = im2double(imread('sphere2.png'));
+sp3 = im2double(imread('sphere3.png'));
+sp4 = im2double(imread('sphere4.png'));
+sp5 = im2double(imread('sphere5.png'));
 
 n_sources = 5;
 nrows = size(sp1, 1);
@@ -25,29 +25,29 @@ sources(:, :, 4) = sp4(:,:);
 sources(:, :, 5) = sp5(:,:);
 
 % STEP 2: Represent light sources with vectors assuming a coordinate system
-% with origin in the top left corner.
+% with origin in the middle.
 light_distance = 1;
-light_frontal_depth = 1;
-light_depth = 1; 
+light_depth = -1; 
 
 % frontal
-v1 = [ 0; 0; light_frontal_depth ];
+v1 = [ 0; 0; -light_depth ];
 v1 = v1/norm(v1);
 % bottom-right
-v2 = [ +light_distance; +light_distance; light_depth ];
+v2 = [ +light_distance; -light_distance; -light_depth ];
 v2 = v2/norm(v2);
 % bottom-left
-v3 = [ +light_distance; -light_distance; light_depth ];
+v3 = [ -light_distance; -light_distance; -light_depth ];
 v3 = v3/norm(v3);
 % top-right
-v4 = [ -light_distance; +light_distance; light_depth ];
+v4 = [ +light_distance; +light_distance; -light_depth ];
 v4 = v4/norm(v4);
 % top-left
-v5 = [ -light_distance; -light_distance; light_depth ];
+v5 = [ -light_distance; +light_distance; -light_depth ];
 v5 = v5/norm(v5);
 
 % STEP 3: Determine matrix V from light sources
-V = [v1'; v2'; v3'; v4'; v5']
+V = [v1'; v2'; v3'; v4'; v5'];
+V = V.* 100;
 
 % STEP 4: Create structures to store albedo and normal per pixel
 normals = zeros(nrows, ncols, 3);
@@ -64,10 +64,12 @@ for x=1:size(sp1, 1);
             I(k, k) = i(k);
         end
         % STEP 7: Solve for g
-        A = I * V;
-        b = I * i;
-        %g = pinv(A) * b;
-        g = linsolve(A,b);
+        A =  I * V;
+        b =  I * i;
+        g = pinv(A) * b;
+        %opts.SYM = true;
+        %g = linsolve(A,b);
+        %g = mldivide(A, b);
         % STEP 8: calculate albedo
         albedos(x, y) = norm(g);
         % STEP 9: calculate normals
@@ -79,11 +81,7 @@ for x=1:size(sp1, 1);
     end
 end
 
-% if the albedo is not in the range [0, 1], then V might be incorrect
-if max(max(albedos)) > 1 || min(min(albedos)) < 0
-    %error('Albedo values not in [0, 1]');
-    disp('albedo values not in range');
-end
+disp(['albedo values in range [', num2str(max(max(albedos))), ', ', num2str(min(min(albedos))), ']']);
 
 % show recovered albedo
 figure
@@ -91,21 +89,21 @@ imshow(albedos, [])
 title('Recovered albedo')
 
 % show normal map
-%figure
+figure
 Un = normals(:, :, 1);
 Vn = normals(:, :, 2);
 Wn = normals(:, :, 3);
 
-% mask = albedos > 0.05;
-% ar = reshape(albedos(mask), [nrows ncols]);
-% ur = reshape(Un(mask), [nrows ncols]);
-% vr = reshape(Vn(mask), [nrows ncols]);
-% wr = reshape(Wn(mask), [nrows ncols]);
-% quiver3(ar, ur, vr, wr, 'AutoScale', 'off', 'AutoScaleFactor', 10)
+%  mask = albedos > 0.05;
+%  ar = reshape(albedos(mask), [nrows ncols]);
+%  ur = reshape(Un(mask), [nrows ncols]);
+%  vr = reshape(Vn(mask), [nrows ncols]);
+%  wr = reshape(Wn(mask), [nrows ncols]);
+%  quiver3(ar, ur, vr, wr, 'AutoScale', 'off', 'AutoScaleFactor', 10)
 
-%quiver3(albedos, Un, Vn, Wn, 'AutoScale', 'off', 'AutoScaleFactor', 10)
-%view(-35,45)
-%title('Normal map image')
+quiver3(albedos, Un, Vn, Wn, 'AutoScale', 'off', 'AutoScaleFactor', 10)
+view(-35,45)
+title('Normal map image')
 
 
 % reconstruct height map
@@ -115,7 +113,7 @@ for y=2:nrows;
     if isnan(q);
         q = 0;
     end
-    height_map(y, 1) = height_map(y-1, 1) + q;
+    height_map(y, 1) = height_map(y-1, 1) - q;
 end
 for y=1:nrows;
     for x=2:ncols;
@@ -123,7 +121,7 @@ for y=1:nrows;
         if isnan(p);
             p = 0;
         end
-        height_map(y, x) = height_map(y, x-1) + p;
+        height_map(y, x) = height_map(y, x-1) - p;
     end
 end
 

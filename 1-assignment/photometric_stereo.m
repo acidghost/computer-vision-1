@@ -7,11 +7,11 @@ function photometric_stereo( )
     % left-above, right-above, right-below, and left-below directions.
 
 % STEP 1: Read images and store them all together in a matrix
-sp1 = imread('sphere1.png');
-sp2 = imread('sphere2.png');
-sp3 = imread('sphere3.png');
-sp4 = imread('sphere4.png');
-sp5 = imread('sphere5.png');
+sp1 = im2double(imread('sphere1.png'));
+sp2 = im2double(imread('sphere2.png'));
+sp3 = im2double(imread('sphere3.png'));
+sp4 = im2double(imread('sphere4.png'));
+sp5 = im2double(imread('sphere5.png'));
 
 n_sources = 5;
 nrows = size(sp1, 1);
@@ -25,13 +25,12 @@ sources(:, :, 4) = sp4(:,:);
 sources(:, :, 5) = sp5(:,:);
 
 % STEP 2: Represent light sources with vectors assuming a coordinate system
-% with origin in the top left corner.
+% with origin in the middle.
 light_distance = 1;
-light_frontal_depth = 1;
 light_depth = 1; 
 
 % frontal
-v1 = [ 0; 0; -light_frontal_depth ];
+v1 = [ 0; 0; -light_depth ];
 v1 = v1/norm(v1);
 % bottom-right
 v2 = [ +light_distance; -light_distance; -light_depth ];
@@ -47,11 +46,14 @@ v5 = [ -light_distance; +light_distance; -light_depth ];
 v5 = v5/norm(v5);
 
 % STEP 3: Determine matrix V from light sources
-V = [v1'; v2'; v3'; v4'; v5']
+V = [v1'; v2'; v3'; v4'; v5'];
+V = V.*100;
 
 % STEP 4: Create structures to store albedo and normal per pixel
 normals = zeros(nrows, ncols, 3);
 albedos = zeros(nrows, ncols);
+p = zeros(nrows, ncols);
+q = zeros(nrows, ncols);
 
 % Loop through pixels in the array
 for x=1:size(sp1, 1);
@@ -67,24 +69,29 @@ for x=1:size(sp1, 1);
         A =  I * V;
         b =  I * i;
         g = pinv(A) * b;
-        %g = linsolve(A,b);
-        %g = mldivide(A, b);
-        % STEP 8: calculate albedo
+        % STEP 8: calculate albedo, normals, p and q
         albedos(x, y) = norm(g);
-        % STEP 9: calculate normals
         if albedos(x, y) == 0;
             normals(x, y, :) = [0 0 0];
+            p(x,y) = 0;
+            q(x,y) = 0; 
         else
             normals(x, y, :) = g / albedos(x, y);
+            p(x,y) = normals(x, y, 1) / normals(x, y, 3);
+            q(x,y) = normals(x, y, 2) / normals(x, y, 3);
         end
+        % STEP 9: second derivative check
+%         if x ~=1
+%             deltaq/deltax
+%         end
+%         if y ~= 1 
+%             deltap/deltay
+%         end
     end
 end
 
-% if the albedo is not in the range [0, 1], then V might be incorrect
-if max(max(albedos)) > 1 || min(min(albedos)) < 0
-    %error('Albedo values not in [0, 1]');
-    disp('albedo values not in range');
-end
+disp(['albedo values in range [', num2str(max(max(albedos))), ', ', num2str(min(min(albedos))), ']']);
+max(max(normals))
 
 % show recovered albedo
 figure
@@ -92,7 +99,7 @@ imshow(albedos, [])
 title('Recovered albedo')
 
 % show normal map
-%figure
+figure
 Un = normals(:, :, 1);
 Vn = normals(:, :, 2);
 Wn = normals(:, :, 3);
@@ -105,30 +112,20 @@ Wn = normals(:, :, 3);
 % quiver3(ar, ur, vr, wr, 'AutoScale', 'off', 'AutoScaleFactor', 10)
 
 %quiver3(albedos, Un, Vn, Wn, 'AutoScale', 'off', 'AutoScaleFactor', 10)
-%view(-35,45)
-%title('Normal map image')
-
+view(-35,45)
+title('Normal map image')
 
 % reconstruct height map
 height_map = zeros(nrows, ncols);
-for y=2:nrows;
-    q = Vn(y, 1) / Wn(y, 1);
-    if isnan(q);
-        q = 0;
-    end
-    height_map(y, 1) = height_map(y-1, 1) + q;
-end
 for y=1:nrows;
+    if y ~= 1
+        height_map(y, 1) = height_map(y-1, 1) + q(y, 1);
+    end
     for x=2:ncols;
-        p = Un(y, x) / Wn(y, x);
-        if isnan(p);
-            p = 0;
-        end
-        height_map(y, x) = height_map(y, x-1) + p;
+        height_map(y, x) = height_map(y, x-1) + p(y, x);
     end
 end
 
 figure
 surfl(height_map); shading interp; colormap gray
-
 end
