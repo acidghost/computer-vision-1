@@ -37,25 +37,30 @@ We created a function that is called without arguments and produces three figure
 
 Here follows a descriptions of the steps executed inside the function:
 \begin{enumerate}
-	\item read the given images for a sphere under different light sources and store them together in a three dimensional matrix;
-	\item represent the light sources with vectors assuming a coordinate system with origin in the center of the image;
-	\item \label{item:k} determine matrix $V$ from light sources. Here we introduce the scalar $k$ which controls the camera response to the input radiance;
-	\item create structures to store albedo, normal, $p$ and $q$ per pixel;
-	\item repeat for each pixel:
+	\item Read the given images for a sphere under different light sources and store them together in a three dimensional matrix. For this we use the Matlab $imread$ and $im2double$ functions to get vectors of desired precisions.
+	\item Represent the light sources with vectors assuming a coordinate system with origin in the center of the image
+	\item \label{item:k} Determine matrix $V$ from light sources. Here we introduce the scalar $k$ which controls the camera response to the input radiance
+	\item Create structures to store albedo, normal, $p$ and $q$ per pixel
+	\item Repeat for each pixel:
 	\begin{enumerate}
-		\item retrieve the pixel values for all images and store them as $i$;
-		\item construct diagonal matrix $I$; 
-		\item solve linear system of equations for $g$;
-		\item calculate albedo, normal, $p$ and $q$;
-		\item \label{item:check} derivative check to filter out big noisy values;
+		\item Retrieve the pixel values for all images and store them as $i$
+		\item Construct diagonal matrix $I$ with $i$ values along the main diagonal
+		\item Solve linear system of equations for $g$ using Matlab's $pinv$ function as follows:
+		\begin{center}
+		$A =  I * V$ \\
+		$b =  I * i$ \\
+		$g = pinv(A) * b$
+		\end{center}
+		\item Calculate albedo, normal, $p$ and $q$ as given by the formulas in page 85 of the book. To avoid NaN values we check for albedo = 0 and set the normal, $p$ and $q$ values to 0. 
+		\item \label{item:check} Ensure smoothness of heigh map by checking $p$ and $q$. For this purpose we calculate the second derivative and filter out big noisy values.  
 	\end{enumerate}
-	\item show recovered albedo (e.g. in Fig. \ref{fig:albedo});
-	\item show surface normals using Matlab's $quiver3$ function (e.g. in Fig. \ref{fig:normal_map});
-	\item apply algorithm to reconstruct the surface height map and show it (e.g. in Fig \ref{fig:height_map}).
+	\item Show recovered albedo (See Fig. \ref{fig:albedo});
+	\item Show surface normals using Matlab's $quiver3$ function (See Fig. \ref{fig:normal_map});
+	\item apply algorithm to reconstruct the surface height map and show it (See Fig \ref{fig:height_map}).
 \end{enumerate}
 
 Regarding the scalar $k$ used at step \ref{item:k}, we found after experimentation that a value of $100$ gives the best results.
-For the derivative check at step \ref{item:check} we used a threshold of $30$ and for those pixels that don't pass the check we set $p$ and $q$ to zero.
+For the derivative check at step \ref{item:check} we used a threshold of $30$ and for those pixels that do not pass the check we set $p$ and $q$ to zero.
 
 
 \begin{figure}[H]
@@ -77,7 +82,7 @@ For the derivative check at step \ref{item:check} we used a threshold of $30$ an
 The goal of this assignment is to use Matlab to convert images between RGB and other color spaces.
 
 We created a function that is called with two arguments: the name of the image to be converted, and the color space to be converted to.
-We used the function \textit{imread} to read the image.
+Again we used the function \textit{imread} to read the image.
 To compute the converted image we had to cast the 8 bits integer image (with values in the range 0 - 255) to doubles.
 The converted image is then displayed as three gray-scale images (one for each channel).
 We experimented with the given image “bricks.jpg” as well as other colorful images.

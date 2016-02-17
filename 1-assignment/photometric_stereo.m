@@ -108,7 +108,7 @@ Un = normals(:, :, 1);
 Vn = normals(:, :, 2);
 Wn = normals(:, :, 3);
 
-quiver3(albedos, Un, Vn, Wn, 'AutoScale', 'off', 'AutoScaleFactor', 10)
+quiver3(albedos, Un, Vn, Wn, 0.5, 'AutoScale', 'off', 'AutoScaleFactor', 10)
 view(-35,45)
 title('Normal map image')
 
