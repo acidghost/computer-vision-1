@@ -13,8 +13,6 @@ if strcmp(color_space, 'opponent');
     converted(:, :, 1) = (R - G) / sqrt(2);
     converted(:, :, 2) = (R + G - 2 * B) / sqrt(6);
     converted(:, :, 3) = (R + G + B) / sqrt(3);
-    % converted = converted / 255;
-    % converted = converted / max(max(max(converted(:,:,:))));
 elseif strcmp(color_space, 'rgb');
     % convert to rgb color space
     for i=1:3;
@@ -29,12 +27,12 @@ end
 
 % display the channels separately
 figure
-subplot(3, 1, 1)
+subplot(1, 3, 1)
 imshow(converted(:,:,1), [])
 title(sprintf('RGB to %s conversion', color_space))
-subplot(3, 1, 2)
+subplot(1, 3, 2)
 imshow(converted(:,:,2), [])
-subplot(3, 1, 3)
+subplot(1, 3, 3)
 imshow(converted(:,:,3), [])
 
 end
