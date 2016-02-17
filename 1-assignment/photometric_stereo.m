@@ -86,12 +86,10 @@ for x=1:size(sp1, 1);
             deltaQ_deltaX = q(x, y) - q(x-1, y);
             deltaP_deltaY = p(x, y) - p(x, y-1);
             s = (deltaP_deltaY - deltaQ_deltaX)^2;
-            % fprintf('s = %f\n', s)
-            if s > 6000
+            if s > 30
                 % Ignore p and q and take previous
-                fprintf('Ignoring (%d, %d) s = %f\n', x, y, s)
-                p(x,y) = p(x, y-1);
-                q(x,y) = q(x-1, y);
+                p(x,y) = 0;
+                q(x,y) = 0;
             end 
         end
     end
