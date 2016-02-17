@@ -63,8 +63,8 @@ for x=1:size(sp1, 1);
         i = reshape(sources(x, y, :), n_sources, 1);
         % STEP 6: Construct diagonal matrix I
         I = zeros(n_sources, n_sources);
-        for k=1:n_sources;
-            I(k, k) = i(k);
+        for j=1:n_sources;
+            I(j, j) = i(j);
         end
         % STEP 7: Solve for g
         A =  I * V;
@@ -78,24 +78,26 @@ for x=1:size(sp1, 1);
             q(x,y) = 0; 
         else
             normals(x, y, :) = g / albedos(x, y);
-            p(x,y) = normals(x, y, 1) / normals(x, y, 3);
-            q(x,y) = normals(x, y, 2) / normals(x, y, 3);
+            p(x,y) = - normals(x, y, 1) / normals(x, y, 3);
+            q(x,y) = - normals(x, y, 2) / normals(x, y, 3);
         end
         % STEP 9: Second derivative check
-%         if x ~=1 && y ~= 1
-%             deltaQ_deltaX = q(x, y) - q(x-1, y);
-%             deltaP_deltaY = p(x, y) - p(x, y-1);
-%             s = (deltaP_deltaY - deltaQ_deltaX)^2;
-%             if abs(s) < 1
-%                 % Ignore p and q and take previous
-%                 p(x,y) = p(x, y-1);
-%                 q(x,y) = q(x-1, y);
-%             end 
-%         end
+        if x ~=1 && y ~= 1
+            deltaQ_deltaX = q(x, y) - q(x-1, y);
+            deltaP_deltaY = p(x, y) - p(x, y-1);
+            s = (deltaP_deltaY - deltaQ_deltaX)^2;
+            % fprintf('s = %f\n', s)
+            if s > 6000
+                % Ignore p and q and take previous
+                fprintf('Ignoring (%d, %d) s = %f\n', x, y, s)
+                p(x,y) = p(x, y-1);
+                q(x,y) = q(x-1, y);
+            end 
+        end
     end
 end
 
-disp(['albedo values in range [', num2str(max(max(albedos))), ', ', num2str(min(min(albedos))), ']']);
+disp(['albedo values in range [', num2str(min(min(albedos))), ', ', num2str(max(max(albedos))), ']']);
 
 %% Show recovered albedo
 figure
@@ -108,7 +110,7 @@ Un = normals(:, :, 1);
 Vn = normals(:, :, 2);
 Wn = normals(:, :, 3);
 
-%quiver3(albedos, Un, Vn, Wn, 'AutoScale', 'off', 'AutoScaleFactor', 10)
+quiver3(albedos, Un, Vn, Wn, 'AutoScale', 'off', 'AutoScaleFactor', 10)
 view(-35,45)
 title('Normal map image')
 
@@ -125,4 +127,5 @@ end
 
 figure
 surfl(height_map); shading interp; colormap gray
+
 end
