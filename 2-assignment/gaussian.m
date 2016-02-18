@@ -8,7 +8,7 @@ end
 siz = (kernel_length-1) / 2;
 
 x = -siz:siz;
-G = (1 / (sigma * (2*pi)) * exp(-(x.*x) / (2 * sigma^2)));
+G = (1 / (sigma * sqrt(2*pi)) * exp(-(x.*x) / (2 * sigma^2)));
 
 % sumg = sum(G(:));
 % if sumg ~= 0
