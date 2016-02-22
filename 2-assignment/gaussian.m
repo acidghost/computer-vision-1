@@ -10,10 +10,10 @@ siz = (kernel_length-1) / 2;
 x = -siz:siz;
 G = (1 / (sigma * sqrt(2*pi)) * exp(-(x.*x) / (2 * sigma^2)));
 
-% sumg = sum(G(:));
-% if sumg ~= 0
-%     G = G / sumg;
-% end
+sumg = sum(G(:));
+if sumg ~= 0
+    G = G / sumg;
+end
 
 end
 
