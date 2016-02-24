@@ -1,6 +1,6 @@
 % Main assignment 2 script
 
-im_path = 'imgs/zebra.png';
+im_path = 'imgs/flowers.jpg';
 sigma_x = 2;
 sigma_y = 2;
 kernel_length = 11; 
@@ -39,7 +39,7 @@ equiv = mean(mean(pixelError));
 figure
 subplot(1,3,1);
 imshow(im, []);
-title('Original');
+title('Original')
 sx_str = num2str(sigma_x); sy_str = num2str(sigma_y);
 % Show image filtered with 2D kernel
 subplot(1,3,2);
@@ -49,13 +49,6 @@ title(['2D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}']);
 subplot(1,3,3);
 imshow(im_out1, []);
 title(['1D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}']);
-% Heat map to visualize error per pixel in middle step of 1D
-e_c_str = num2str(equiv_col);
-title = ['1D first filter vs 2D filter. Average = ', e_c_str];
-hm_col = HeatMap(pixelError_col);
-addTitle(hm_col, title);
-% Heat map for final image
-e_str = num2str(equiv);
-title = ['1D final filter vs 2D filter. Average = ', e_str];
-hm = HeatMap(pixelError);
-addTitle(hm, title);
+% Produce heat map to visualize error per pixel
+hmo = HeatMap(pixelError);
+addTitle(hmo, Title);

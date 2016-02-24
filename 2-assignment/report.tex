@@ -44,23 +44,44 @@ In order to check that both functions produce the same images we make a pixel pe
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.8\textwidth]{imgs/branches.jpg}
-	\caption{Original image}
-	\label{fig:original}
+	\includegraphics[width=.9\textwidth]{imgs/flowers_conv.jpg}
+	\caption{Comparison for flowers.jpg.}
+	\label{fig:flowers}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.8\textwidth]{imgs/1D_branches.jpg}
-	\caption{1D convoluted image}
-	\label{fig:1D}
+	\includegraphics[width=.9\textwidth]{imgs/flowers_col_heatmap.jpg}
+	\caption{Heatmap showing the absolute difference per pixel between Step 1 of 1D filtering and 2D final filtered image for flowers.jpg. Reported mean error per pixel is $0.0115$}
+	\label{fig:flowers_col_heatmap}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=.8\textwidth]{imgs/2D_branches.jpg}
-	\caption{2D convoluted image}
-	\label{fig:2D}
+	\includegraphics[width=.9\textwidth]{imgs/flowers_heatmap.jpg}
+	\caption{Heatmap showing the absolute difference per pixel between both final filtered images for flowers.jpg. Reported mean error per pixel is $4.0687 e^-017$}
+	\label{fig:flowers_heatmap}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{imgs/zebra_conv.jpg}
+	\caption{Comparison for zebra.png. Reported mean error per pixel is $5.5609 e^-017$}
+	\label{fig:zebra}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{imgs/zebra_col_heatmap.jpg}
+	\caption{Heatmap showing the absolute difference per pixel between Step 1 of 1D filtering and 2D final filtered image for zebra.png. Reported mean error per pixel is $0.0223$}
+	\label{fig:zebra_col_heatmap}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{imgs/zebra_heatmap.jpg}
+	\caption{Heatmap showing the absolute difference per pixel between both final filtered images for zebra.png. Reported mean error per pixel is $5.5609 e^-017$}
+	\label{fig:zebra_heatmap}
 \end{figure}
 
 We note that the 1D convoluted image takes longer to compute. 
