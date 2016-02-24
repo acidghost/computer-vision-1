@@ -1,11 +1,12 @@
-function im_out2 = gaussianConv( im_path, sigma_x, sigma_y )
-%GAUSSIANCONV Convolute an image with a 2D Gaussian filter
+function equiv = gaussianConv( im_path, sigma_x, sigma_y )
+%GAUSSIANCONV Convolute an image with a Gaussian filter
 
 kernel_length = 11;
 
 % Load image
 im = im2double(imread(im_path));
-size_c = size(im, 3);
+size_c] = size(im);
+size(im, 3)
 
 % Create 1-dimensional kernels
 kernel_x = gaussian(sigma_x, kernel_length)';
@@ -22,13 +23,13 @@ end
 for i=1:size_c;
     im_out1(:,:,i) = conv2(kernel_x, kernel_y, im(:,:,i), 'same');
 end
-[size_y, size_x, size_c] = size(im_out1);
+[size_y1, size_x1, size_c1] = size(im_out1);
 
 
 % Assert that the results of 1D convolution is the same as 2D one
 % (within a small epsilon value)
 eps = 1e-12;
-error = zeros(size_y, size_x, size_c);
+error = zeros(size_y1, size_x1, size_c1);
 for y=1:size_y;
     for x=1:size_x;
         p1 = im_out1(y, x);
@@ -37,10 +38,11 @@ for y=1:size_y;
         assert(p1 > p2 - eps && p1 < p2 + eps, '1D convolution results are not the same as 2D one!')
     end
 end
-
+size(error)
 
 % Produce heat map to visualize error per pixel
 addedError = mean(error, 3);
+size(addedError)
 hmo = HeatMap(addedError)
 
 % Show original image

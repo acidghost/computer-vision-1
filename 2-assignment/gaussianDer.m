@@ -1,11 +1,11 @@
-function [ imOut Gd] = gaussianDer ( image_path ,G, sigma )
+function [ imOut Gd] = gaussianDer (im_path ,G, sigma )
 
 % Load image
 im = im2double(imread(im_path));
-[size_y, size_x, size_c] = size(im)
+[size_y, size_x, size_c] = size(im); 
 
 % Apply Gaussian kernel to image
-%im_out2 = zeros(size_y, size_x, size_c);
+% im_out2 = zeros(size_y, size_x, size_c);
 for k=1:size_c;
     for j=0:size_x;
         for i=0:size_y;
@@ -13,7 +13,6 @@ for k=1:size_c;
             imOut(i, j, k) = Gd;
         end
     end
-    im_out2(:,:,k) = conv2(im(:,:,k), kernel, 'same');
 end
 
 end

@@ -1,5 +1,7 @@
-function im_out2 = gaussianConv( im_path, sigma_x, sigma_y )
-%GAUSSIANCONV Convolute an image with a 2D Gaussian filter
+% Main assignment 2 script
+
+function equiv = gaussianConv( im_path, sigma_x, sigma_y )
+%GAUSSIANCONV Convolute an image with a Gaussian filter
 
 kernel_length = 11;
 
