@@ -16,16 +16,17 @@ kernel = kernel_x * kernel_y;
 
 
 % Apply 2D kernel to image
-im_out2 = zeros(size_y, size_x, size_c);
+%im_out2 = zeros(size_y, size_x, size_c);
 for i=1:size_c;
     im_out2(:,:,i) = conv2(im(:,:,i), kernel, 'same');
 end
 % Apply 1D kernels to image, first columns and then rows
-im_out1 = zeros(size_y, size_x, size_c);
+%im_out1 = zeros(size_y, size_x, size_c);
 for i=1:size_c;
     im_out1(:,:,i) = conv2(kernel_x, kernel_y, im(:,:,i), 'same');
 end
 
+size(im_out1)
 
 % Assert that the results of 1D convolution is the same as 2D one
 % (within a small epsilon value)
@@ -41,17 +42,17 @@ end
 
 % Show original image
 figure
-imshow(im, [])
+imshow(im, []);
 title('Original')
 sx_str = num2str(sigma_x); sy_str = num2str(sigma_y);
 % Show image filtered with 2D kernel
 figure
-imshow(im_out2, [])
-title(['2D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}'])
+imshow(im_out2, []);
+title(['2D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}']);
 % Show image filtered with 1D kernels
 figure
-imshow(im_out1, [])
-title(['1D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}'])
+imshow(im_out1, []);
+title(['1D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}']);
 
 end
 

@@ -20,7 +20,8 @@ Selene Baez Santamaria (10985417) - Andrea Jemmett (11162929)}
 
 
 \section{1D Gaussian Filter}
-% Qeustion: "Compare your function with MATLAB’s built-in fspecial. What are the differences?"
+% Question: "Compare your function with MATLAB’s built-in fspecial. What are the differences?"
+Our function takes the same arguments as the built-in fspecial, but it generates different output. On the one hand our function generates a vector of size $kernelLength$. On the other hand, the fspecial function returns a rectangular or squared matrix dependant on the hsize parameter. 
 
 
 \section{Convolving an image with a 2D Gaussian}
@@ -29,7 +30,38 @@ Selene Baez Santamaria (10985417) - Andrea Jemmett (11162929)}
 % Use kernel length of 11.
 % Report the numerical equivalence as well as plots at every stage of filtering pipeline.
 % Question 2: Explain the benefits of kernel separability, shortly.
+We use a value of $\sigma_x = 2$ and $\sigma_y = 2$ and a kernel length of 11. First we call the gaussian function defined in the prefious section to get a 1D filter. We multiply this 1D vector by its traspose to get a 2D gaussian filter. 
 
+To convolve the images and filters we use the built-it function $conv2$: After testing the different options we found out the following:
+
+\begin{itemize}
+	\item "full": performs the full convolution. Visually, we note that the produced images have black frames on the edges since the dimensions are slightly larger than the original image.
+	\item "valid": performs convolution but omits padding %TODO
+	\item "same": performs the convolution and returns an image that is the same size as the original. 
+\end{itemize}
+
+In order to check that both functions produce the same images we make a pixel per pixel comparison. We check that the absolute value of the difference among the values is less that a small value $\epsilon$. Hereby we show the original and filtered images:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.8\textwidth]{imgs/branches.jpg}
+	\caption{Original image}
+	\label{fig:original}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.8\textwidth]{imgs/1D_branches.jpg}
+	\caption{1D convoluted image}
+	\label{fig:1D}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.8\textwidth]{imgs/2D_branches.jpg}
+	\caption{2D convoluted image}
+	\label{fig:2D}
+\end{figure}
 
 \section{Gaussian Derivative}
 
