@@ -1,4 +1,4 @@
-% Main assignment 2 script
+% Main assignment 2.2 script
 
 im_path = 'imgs/zebra.png';
 sigma_x = 2;
@@ -19,11 +19,9 @@ kernel_x = gaussian(sigma_x, kernel_length)';
 kernel_y = gaussian(sigma_y, kernel_length);
 
 % Convolve first columns and then rows
+im_out1 = zeros(size(im));
 for i=1:size_c;
-    im_out1_col(:,:,i) = conv2(kernel_x, im(:,:,i), 'full');
-end
-for i=1:size_c;
-    im_out1(:,:,i) = conv2(kernel_y, im_out1_col(:,:,i), 'full');
+    im_out1(:,:,i) = conv2(kernel_y, kernel_x, im(:,:,i), 'same');
 end
 
 %% Compare the results of 1D convolution and 2D one
@@ -49,13 +47,14 @@ title(['2D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}']);
 subplot(1,3,3);
 imshow(im_out1, []);
 title(['1D filtered _{\sigma_x=', sx_str, ', \sigma_y=', sy_str, '}']);
-% Heat map to visualize error per pixel in middle step of 1D
-e_c_str = num2str(equiv_col);
-title = ['1D first filter vs 2D filter. Average = ', e_c_str];
-hm_col = HeatMap(pixelError_col);
-addTitle(hm_col, title);
-% Heat map for final image
-e_str = num2str(equiv);
-title = ['1D final filter vs 2D filter. Average = ', e_str];
-hm = HeatMap(pixelError);
-addTitle(hm, title);
+
+% % Heat map to visualize error per pixel in middle step of 1D
+% e_c_str = num2str(equiv_col);
+% title_v = ['1D first filter vs 2D filter. Average = ', e_c_str];
+% hm_col = HeatMap(pixelError_col);
+% addTitle(hm_col, title_v);
+% % Heat map for final image
+% e_str = num2str(equiv);
+% title_v = ['1D final filter vs 2D filter. Average = ', e_str];
+% hm = HeatMap(pixelError);
+% addTitle(hm, title_v);
