@@ -33,11 +33,14 @@ Iy2 = conv2(Iy.^2, g, 'same');
 Ixy = conv2(Ix.*Iy, g, 'same');
 
 
-%% Compute the 'cornerness' matrix H
+%% Compute the corner metric H
 A = Ix2; B = Ixy; C = Iy2;
 H = (A.*C - B.^2) - 0.04 * ((A + C).^2);
 % Scale H
 H = (1000 / max(max(H))) * H;
+% TODO Transpose H (to motivate... but works this way!)
+% probably because the convolution rotates the image or somthing like that
+H = H';
 
 %% Find local maxima within the window
 nrows = size(H, 1);
