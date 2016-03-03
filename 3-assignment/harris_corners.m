@@ -9,16 +9,15 @@ im = im2double(im_gray);
 %% Compute gaussian partial derivatives
 siz = (kernel_length-1) / 2;
 kernel_size = -siz:siz;
-[Xk, Yk] = meshgrid(kernel_size);
-kernel_x = fspecial('gaussian', kernel_length, sigma);
-kernel_xd = (Xk .* kernel_x) / (sigma^2);
-kernel_y = kernel_x';
-kernel_yd = (Yk .* kernel_y) / (sigma^2);
+kernel_y = gaussian(sigma, kernel_length);
+kernel_yd = (kernel_size .* kernel_y) / (sigma^2);
+kernel_x = kernel_y';
+kernel_xd = (kernel_size' .* kernel_x) / (sigma^2);
 
 
 %% Convolve image with guassian derivative
 % to obtain gradients in X and Y directions
-Ix = conv2(im, kernel_xd, 'same');
+Ix = conv2(im, kernel_xd, 'same'); 
 Iy = conv2(im, kernel_yd, 'same');
 figure % Plot gradient images
 subplot 121, imagesc(Ix), colormap gray, title('Image gradient in X direction I_x');
