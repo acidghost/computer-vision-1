@@ -7,14 +7,14 @@ im = im2double(im_gray);
 
 
 %% Compute gaussian partial derivatives
-kernel_y = gaussian(sigma, kernel_length);
-kernel_x = kernel_y';
+kernel_x = gaussian(sigma, kernel_length);
+kernel_y = kernel_x';
 
 
 %% Convolve image with gaussian derivative
 % to obtain gradients in X and Y directions
-Ix = gaussianDer(im, kernel_x, sigma, 'x');
-Iy = gaussianDer(im, kernel_y, sigma, 'y');
+Ix = gaussian_der(im, kernel_x, sigma, 'x');
+Iy = gaussian_der(im, kernel_y, sigma, 'y');
 
 
 figure % Plot gradient images
@@ -73,7 +73,7 @@ c = c(c ~= 0);
 %% Plot feature points found over original image
 figure, imagesc(im_rgb)
 hold on, plot(r, c, 'bo')
-title(sprintf('Detected features with window\\_size=%d \\sigma=%.2f \\threshold=%d', window_size, sigma, threshold))
+title(sprintf('Detected features with window\\_size=%d \\sigma=%.2f threshold=%d', window_size, sigma, threshold))
 hold off
 
 end
