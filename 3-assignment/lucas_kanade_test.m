@@ -2,7 +2,7 @@ close all
 
 
 regions_size = 15;
-quiver_scale = 15;
+quiver_scale = 10;
 show_loops = 30;
 
 impath1 = 'assets/sphere1.ppm';
