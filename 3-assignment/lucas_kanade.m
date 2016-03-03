@@ -21,19 +21,17 @@ half_regions_size = (regions_size-1) / 2;
 imsize = [nrows, ncols];
 
 
-% kernel_length = 5;
-% sigma = 1;
-% siz = (kernel_length-1) / 2;
-% kernel_size = -siz:siz;
-% kernel_y = gaussian(sigma, kernel_length);
-% kernel_yd = (kernel_size .* kernel_y) / (sigma^2);
-% kernel_x = kernel_y';
-% kernel_xd = (kernel_size' .* kernel_x) / (sigma^2);
+kernel_length = 5;
+sigma = 1;
+siz = (kernel_length-1) / 2;
+kernel_size = -siz:siz;
+kernel_x = gaussian(sigma, kernel_length);
+kernel_xd = (kernel_size .* kernel_x) / (sigma^2);
+kernel_y = kernel_x';
+kernel_yd = (kernel_size' .* kernel_y) / (sigma^2);
 
 
 %% Apply difference filter to compute derivatives
-kernel_xd = [-1 1; -1 1];
-kernel_yd = kernel_xd';
 Ix_full = conv2(im1, kernel_xd, 'same') + conv2(im2, kernel_xd, 'same');
 Iy_full = conv2(im1, kernel_yd, 'same') + conv2(im2, kernel_yd, 'same');
 It_full = conv2(im1, .5 * ones(size(kernel_xd)), 'same') + conv2(im2, -.5 * ones(size(kernel_xd)), 'same');
