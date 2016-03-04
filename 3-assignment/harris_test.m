@@ -1,7 +1,7 @@
 close all
 
-im_path = 'assets/pingpong/0000.jpeg';
-%im_path = 'assets/person_toy/00000001.jpg';
+%im_path = 'assets/pingpong/0000.jpeg';
+im_path = 'assets/person_toy/00000001.jpg';
 kernel_length = 11;
 sigma = 1;
 window_size = 3;
