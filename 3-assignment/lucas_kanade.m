@@ -1,4 +1,4 @@
-function [ u, v ] = lucas_kanade( impath1, impath2, regions_size, show_loops, quiver_scale )
+function [ u, v ] = lucas_kanade( impath1, impath2, regions_size, show_loops, quiver_scale, keypoints )
 %LUCAS_KANADE Compute optical flow using Lucas-Kanade method
 
 
@@ -15,7 +15,6 @@ else
     im2 = im2double(imfull2);
 end
 
-half_regions_size = (regions_size-1) / 2;
 
 [nrows, ncols] = size(im1);
 imsize = [nrows, ncols];
@@ -38,11 +37,35 @@ It_full = conv2(im1, .5 * ones(size(kernel_xd)), 'same') + conv2(im2, -.5 * ones
 
 
 %% Apply Lucas-Kanade method
-u = zeros(imsize);
-v = zeros(imsize);
-% Loop over the non-overlapping regions
-for y = 1+half_regions_size:regions_size:nrows-half_regions_size;
-    for x = 1+half_regions_size:regions_size:ncols-half_regions_size;
+half_regions_size = (regions_size-1) / 2;
+if ~exist('keypoints', 'var')
+    u = zeros(imsize);
+    v = zeros(imsize);
+    % Loop over the non-overlapping regions
+    for y = 1+half_regions_size:regions_size:nrows-half_regions_size;
+        for x = 1+half_regions_size:regions_size:ncols-half_regions_size;
+            yrange = y-half_regions_size:y+half_regions_size;
+            xrange = x-half_regions_size:x+half_regions_size;
+            Ix = Ix_full(yrange, xrange);
+            Iy = Iy_full(yrange, xrange);
+            It = It_full(yrange, xrange);
+
+            A = [Ix(:) Iy(:)];
+            b = -It(:);
+
+            U = pinv(A' * A) * A' * b;
+
+            u(y, x) = U(1);
+            v(y, x) = U(2);
+        end
+    end
+else
+    u = zeros(size(keypoints, 1), 1);
+    v = zeros(size(keypoints, 1), 1);
+    % Loop over the keypoints
+    for k = 1:size(keypoints, 1)
+        y = keypoints(k, 1);
+        x = keypoints(k, 2);
         yrange = y-half_regions_size:y+half_regions_size;
         xrange = x-half_regions_size:x+half_regions_size;
         Ix = Ix_full(yrange, xrange);
@@ -51,11 +74,11 @@ for y = 1+half_regions_size:regions_size:nrows-half_regions_size;
         
         A = [Ix(:) Iy(:)];
         b = -It(:);
-        
-        U = pinv(A' * A) * A' * b;
 
-        u(y, x) = U(1);
-        v(y, x) = U(2);
+        U = pinv(A' * A) * A' * b;
+        
+        u(k) = U(1);
+        v(k) = U(2);
     end
 end
 
@@ -70,20 +93,22 @@ end
 
 
 % Animate two frames with optic flow
-figure
-if ~isrgb
-    colormap gray
-end
-for i = 1:show_loops;
-    imagesc(imfull1), hold on
-    quiver(u, v, quiver_scale )
-    title('First frame'), hold off
-    drawnow, pause(.5)
-    
-    imagesc(imfull2), hold on
-    quiver(u, v, quiver_scale )
-    title('Second frame'), hold off
-    drawnow, pause(.5)
+if show_loops > 0
+    figure
+    if ~isrgb
+        colormap gray
+    end
+    for i = 1:show_loops;
+        imagesc(imfull1), hold on
+        quiver(u, v, quiver_scale )
+        title('First frame'), hold off
+        drawnow, pause(.5)
+
+        imagesc(imfull2), hold on
+        quiver(u, v, quiver_scale )
+        title('Second frame'), hold off
+        drawnow, pause(.5)
+    end
 end
 
 
