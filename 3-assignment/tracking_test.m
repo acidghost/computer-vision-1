@@ -1,5 +1,5 @@
 
-close all
+clear, close all
 
 
 % im_format = 'assets/person_toy/000000%02d.jpg';
@@ -37,8 +37,7 @@ regions_size = 5;
 half_region = floor(regions_size / 2);
 
 
-u = keypoints_r;
-v = keypoints_c;
+u = r; v = c;
 figure
 for i = im_indexes
     j = i - 1;
@@ -52,7 +51,7 @@ for i = im_indexes
     imagesc(ims(:, :, i)), colormap gray, hold on
     plot(u, v, 'bo')
     quiver(u, v, du, dv, 1, 'r'), hold off
-    drawnow, pause(1)
+    drawnow, pause(.5)
     
     u = u + du;
     v = v + dv;
