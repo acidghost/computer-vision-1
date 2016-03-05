@@ -45,9 +45,7 @@ A = Ix2; B = Ixy; C = Iy2;
 H = (A.*C - B.^2) - 0.04 * ((A + C).^2);
 % Scale H
 H = (1000 / max(max(H))) * H;
-% TODO Transpose H (to motivate... but works this way!)
-% probably because the convolution rotates the image or somthing like that
-H = H';
+
 
 %% Find local maxima within the window
 nrows = size(H, 1);
@@ -72,7 +70,7 @@ c = c(c ~= 0);
 
 %% Plot feature points found over original image
 figure, imagesc(im_rgb)
-hold on, plot(r, c, 'bo')
+hold on, plot(c, r, 'bo')
 title(sprintf('Detected features with window\\_size=%d \\sigma=%.2f threshold=%d', window_size, sigma, threshold))
 hold off
 
