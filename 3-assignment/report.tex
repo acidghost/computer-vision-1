@@ -1,6 +1,8 @@
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{url}
 \usepackage{amsmath}
 \usepackage{float}
@@ -22,8 +24,8 @@ Selene Baez Santamaria (10985417) - Andrea Jemmett (11162929)}
 % Question: "Demo function"
 To implement the Harris Corner Detector we decided to use the function we
 implemented on previous assignments. This way we can exploit the benefits of
-kernel separability and improve performance. Thus, we create horizontal and
-vertical Gaussian kernels, and apply a Gaussian first order derivative kernel to
+kernel separability and improve performance. Thus, we created horizontal and
+vertical Gaussian kernels, and applied a Gaussian first order derivative kernel to
 the image, read in a gray scale format. The image gradients are shown in Figure
 \ref{fig:partialDerivatives_pingpong} and \ref{fig:partialDerivatives_person}.
 
@@ -39,12 +41,12 @@ the image, read in a gray scale format. The image gradients are shown in Figure
 	\label{fig:partialDerivatives_person}
 \end{figure}
 
-Then, we create the $Q$ matrix, first by squaring raising the gradients (i.e.
+Then, we created the $Q$ matrix, first by squaring the gradients (i.e.
 ($I_x)^2$ and ($I_y)^2$) and multiplying them with each other (i.e. $I_x *
 I_y$), and then by convolving the resulting with a Gaussian kernel. With these
-components qe are able to compute $H$ using Equation $12$ shown in the
+components we were able to compute $H$ using Equation $12$ shown in the
 assignment instructions. A visualization for the scaled surfaces are shown in
-Figure and  .
+Figure \ref{fig:surface_pingpong} and \ref{fig:surface_person}.
 
 \begin{figure}[H] \centering
 	\includegraphics[width=1\textwidth]{imgs/surface_pingpong.jpg}
@@ -60,20 +62,16 @@ Figure and  .
 	\label{fig:surface_person}
 \end{figure}
 
-Finally, to choose the corner points we consider two conditions:
+Finally, to choose the corner points we considered two conditions:
 \begin{enumerate} 
 	\item A corner point must be a local maximum. To check for
 		this we need to compare its value with all its neighbors' within
-		a given window parameter.
+		a given window.
 	\item A corner point must have a higher $H$
 		value than a given threshold.
 \end{enumerate}
 
-
-To validate our detector we compare it with the Matlab corner function
-
-
-
+To create an accurate corner detector we need to tune the parameters. We noticed that smaller $\sigma$ had an effect of detecting more corner points on the background. A higher threshold results in more pressure to become a corner point and thus reduces the final number of points. Finally, a larger window size makes the corner points more sparse, and prevents the corner points to be clustered.
 
 After tuning, the chosen values for the final detector are:
 \begin{itemize}
@@ -83,20 +81,39 @@ After tuning, the chosen values for the final detector are:
 	\item $threshold = 7$
 \end{itemize}
 
-As stated in the previous assignment, a $kernel length$ of 11 and $\sigma$ of 1
-seem to work well as parameters for convolving the Gaussian first order
-derivative kernel to find edges. 
+To validate our detector we compared it with the Matlab corner function. Quantitatively we get the number of corner points detected, so that our detector ideally has an output in the same order of magnitude as the Matlab detector. Additionally, we compared it qualitatively by visually plotting the corner points and checking both implementations detected about the same points.
+ 
+\begin{figure}[H] \centering
+	\begin{subfigure}{.5\textwidth} \centering
+		\includegraphics[width=.9\textwidth]{imgs/ourCorners_pingpong.jpg}
+		\caption{Our implementation of Harris Corner Detector.}
+		\label{fig:ourCorners_pingpong}
+	\end{subfigure}%
+	\begin{subfigure}{.5\textwidth}	\centering
+		\includegraphics[width=.9\textwidth]{imgs/matlabCorners_pingpong.jpg}
+		\caption{Matlab's built in Corner function.}
+		\label{fig:matlabCorners_pingpong}
+	\end{subfigure}
+	\caption{Corner points in first Ping Pong image}
+	\label{fig:corners_pingpong}
+\end{figure}
 
-During tuning we discovered the effect of the parameters over the performance of
-the detector. We noticed that smaller $\sigma$ had an effect of detecting more
-corner points on the background. A higher threshold reduces the number of corner
-points and 
-
-a larger window size makes the corner points more sparse, and prevents the
-corner points to be clustered. 
+\begin{figure}[H] \centering
+	\begin{subfigure}{.5\textwidth} \centering
+		\includegraphics[width=.9\textwidth]{imgs/ourCorners_person.jpg}
+		\caption{Our implementation of Harris Corner Detector.}
+		\label{fig:ourCorners_person}
+	\end{subfigure}%
+	\begin{subfigure}{.5\textwidth}	\centering
+		\includegraphics[width=.9\textwidth]{imgs/matlabCorners_person.jpg}
+		\caption{Matlab's built in Corner function.}
+		\label{fig:matlabCorners_person}
+	\end{subfigure}
+	\caption{Corner points in first Toy person image}
+	\label{fig:corners_person}
+\end{figure}
 
 \section{Lucas-Kanade Algorithm for Optical Flow}
-
 
 
 \section{Tracking}
