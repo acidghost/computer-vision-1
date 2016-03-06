@@ -1,5 +1,9 @@
-function [ H, r, c ] = harris_corners( im_path, kernel_length, sigma, window_size, threshold )
+function [ H, r, c ] = harris_corners( im_path, kernel_length, sigma, window_size, threshold, display )
 %HARRIS_CORNERS Find corners in an image and return H an points in r and c
+
+if ~exist('display', 'var')
+    display = 1;
+end
 
 im_rgb = imread(im_path);
 im_gray = rgb2gray(im_rgb);
@@ -16,9 +20,12 @@ kernel_y = kernel_x';
 Ix = gaussian_der(im, kernel_x, sigma, 'x');
 Iy = gaussian_der(im, kernel_y, sigma, 'y');
 
-figure % Plot gradient images
-subplot 121, imagesc(Ix), colormap gray, title('Image gradient in X direction I_x');
-subplot 122, imagesc(Iy), colormap gray, title('Image gradient in Y direction I_y');
+
+if display
+    figure % Plot gradient images
+    subplot 121, imagesc(Ix), colormap gray, title('Image gradient in X direction I_x');
+    subplot 122, imagesc(Iy), colormap gray, title('Image gradient in Y direction I_y');
+end
 
 
 %% Define large gaussian 
@@ -70,10 +77,12 @@ r = r(r ~= 0);
 c = c(c ~= 0);
 
 %% Plot feature points found over original image
-figure, imagesc(im_rgb)
-hold on, plot(c, r, 'bo')
-title(sprintf('Detected features with window\\_size=%d \\sigma=%.2f threshold=%d', window_size, sigma, threshold))
-hold off
+if display
+    figure, imagesc(im_rgb)
+    hold on, plot(c, r, 'bo')
+    title(sprintf('Detected features with window\\_size=%d \\sigma=%.2f threshold=%d', window_size, sigma, threshold))
+    hold off
+end
 
 end
 
