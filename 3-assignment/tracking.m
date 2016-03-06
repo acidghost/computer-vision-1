@@ -1,17 +1,18 @@
 clear, close all
 
 
+save_video = false;
+frame_pause = .1;
+
 % im_format = 'assets/person_toy/00000%03d.jpg';
+% video_name = 'person_toy';
 % nfirst = 1;
 % nim = 104;
 im_format = 'assets/pingpong/00%02d.jpeg';
+video_name = 'pingpong';
 nfirst = 0;
 nim = 52;
 
-im_indexes = nfirst+1:nim;
-
-im_first = imread(sprintf(im_format, nfirst));
-[nrows, ncols, nchan] = size(im_first);
 
 
 % Detect corner features using Harris corner detector
@@ -24,11 +25,16 @@ threshold = 10;
 
 regions_size = 15;
 
-
 u = r; v = c;
-figure
+fig = figure; figure(fig)
 % For each pair of consecutive frames, compute displacement vectors
 % of keypoints to track using Lucas-Kanade optical flow estimation
+if save_video
+    vid = VideoWriter(video_name, 'Motion JPEG AVI');
+    vid.FrameRate = 10;
+    open(vid)
+end
+im_indexes = nfirst+1:nim;
 for i = im_indexes
     impath1 = sprintf(im_format, i - 1);
     impath2 = sprintf(im_format, i);
@@ -46,9 +52,17 @@ for i = im_indexes
     imagesc(im1), hold on
     plot(v, u, 'bo')
     quiver(v, u, dv, du, 1, 'r'), hold off
-    drawnow, pause(.3)
+    if save_video
+        frame = getframe(fig);
+        fr = frame.cdata;
+        writeVideo(vid, fr)
+    end
+    drawnow, pause(frame_pause)
     
     % Add motion vector components to tracked features
     u = u + du;
     v = v + dv;
+end
+if save_video
+    close(vid)
 end
