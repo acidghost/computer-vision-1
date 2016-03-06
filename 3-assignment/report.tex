@@ -25,8 +25,7 @@ Selene Baez Santamaria (10985417) - Andrea Jemmett (11162929)}
 To implement the Harris Corner Detector we decided to use the function we
 implemented on previous assignments. This way we can exploit the benefits of
 kernel separability and improve performance. Thus, we created horizontal and
-vertical Gaussian kernels, and applied a Gaussian first order derivative kernel to
-the image, read in a gray scale format. The image gradients are shown in Figure
+vertical Gaussian kernels, and applied a Gaussian first order derivative kernel to the image, read in a gray scale format. The image gradients are shown in Figure
 \ref{fig:partialDerivatives_pingpong} and \ref{fig:partialDerivatives_person}.
 
 \begin{figure}[H] \centering
@@ -118,11 +117,24 @@ In case of the Ping Pong image, $n_corners = 63$. On the one hand, our detector 
 In case of the Toy person image, $n_corners = 27$. Our detector finds more corner points in the frame of the power outlet and detects three of the four edges of the white central box while the Matlab function focuses more on the toy.
 
 \section{Lucas-Kanade Algorithm for Optical Flow}
-Once again we compute the gradients of the images using our first order Gaussian kernel as stated in the previous section. 
+In order to implement the Lucas Kanade method for Optical Flow we started by computing the $x-y$ gradients of the images using our first order Gaussian kernel as stated in the previous section. 
+
+% To get the full partial $x-y$ derivatives, we added the corresponding gradients from image in $t_1$ and $t_2$. % NOT SURE WHY? ASSIGNMENT SAYS IT?S ONLY DERIVATIVE EVALUATED AT CURRENT TIME.
+To obtain the $t$ gradient we simply convolve the images with a uniform kernel of value $0.5$ for image in $t_1$ and a value of $- 0.5$ for image in $t_2$. 
 
 Then we divide the image into non overlapping regions, and loop through them. For each section we solve the system of equations to find velocities.
 
+\begin{figure}[H] \centering
+	\includegraphics[width=.8\textwidth]{imgs/sphere.jpg}
+	\caption{Optical flow as determined by Lucas Kanade algorithm, applied to Sphere images.}
+	\label{fig:sphere_lucas}
+\end{figure}
 
+\begin{figure}[H] \centering
+	\includegraphics[width=.8\textwidth]{imgs/synth.jpg}
+	\caption{Optical flow as determined by Lucas Kanade algorithm, applied to Synth images}
+	\label{fig:synth_lucas}
+\end{figure}
 
 
 \section{Tracking}

@@ -16,7 +16,6 @@ kernel_y = kernel_x';
 Ix = gaussian_der(im, kernel_x, sigma, 'x');
 Iy = gaussian_der(im, kernel_y, sigma, 'y');
 
-
 figure % Plot gradient images
 subplot 121, imagesc(Ix), colormap gray, title('Image gradient in X direction I_x');
 subplot 122, imagesc(Iy), colormap gray, title('Image gradient in Y direction I_y');
