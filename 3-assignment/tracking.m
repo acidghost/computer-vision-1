@@ -1,13 +1,13 @@
 clear, close all
 
-% im_format = 'assets/person_toy/00000%03d.jpg';
-% video_name = 'person_toy';
-% nfirst = 1;
-% nim = 104;
-im_format = 'assets/pingpong/00%02d.jpeg';
-video_name = 'pingpong';
-nfirst = 0;
-nim = 52;
+im_format = 'assets/person_toy/00000%03d.jpg';
+video_name = 'person_toy';
+nfirst = 1;
+nim = 104;
+% im_format = 'assets/pingpong/00%02d.jpeg';
+% video_name = 'pingpong';
+% nfirst = 0;
+% nim = 52;
 
 %% Set video 
 save_video = false;
@@ -49,6 +49,15 @@ for i = im_indexes
     % Apply LK. Need to round points to pixel location
     [ du, dv ] = lucas_kanade(im1, im2, regions_size, 0, 0, round([u v]));
     
+    % Save sample value to plot at the end
+    if i == 20
+       im1_sample = im1;
+       v_sample = v;
+       u_sample = u;
+       dv_sample = dv;
+       du_sample = du;
+    end
+    
     imagesc(im1), hold on
     plot(v, u, 'bo')
     quiver(v, u, dv, du, 1, 'r'), hold off
@@ -64,6 +73,11 @@ for i = im_indexes
     u = u + du;
     v = v + dv;
 end
+
+figure
+imagesc(im1_sample), hold on
+plot(v_sample, u_sample, 'bo')
+quiver(v_sample, u_sample, dv_sample, du_sample, 1, 'r'), hold off
 
 %% Save video
 if save_video

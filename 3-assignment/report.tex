@@ -164,7 +164,17 @@ identifiable in the image.
 \section{Lucas-Kanade Algorithm for Optical Flow}
 In order to implement the Lucas Kanade method for Optical Flow estimation, we started by
 computing the gradient of the images along the $X$ and $Y$ directions using a Gaussian
-kernel as stated in the previous section.
+kernel as stated in the previous section. This time the tuned parameters are as follows: 
+
+\begin{center}
+	\begin{tabular}{| c | c |}
+		\hline
+		\textbf{kernel length} & 5   \\ \hline
+		\textbf{$\sigma$}      & 1  \\ 
+		\hline
+	\end{tabular}
+\end{center}
+
 % To get the full partial $x-y$ derivatives, we added the corresponding gradients from image in $t_1$ and $t_2$.
 % NOT SURE WHY? ASSIGNMENT SAYS IT?S ONLY DERIVATIVE EVALUATED AT CURRENT TIME.
 To obtain the $t$ gradient we simply convolve the images with a uniform kernel
@@ -172,7 +182,7 @@ of value $0.5$ and then we subtract $t_2$ from $t_1$.
 
 To exploit the assumption made by Lucas-Kanade we divide the image into
 non-overlapping regions. The region size is a parameter that can be tuned, and
-in this case is set as $region\_size= 15$. Then, for each region we solved the
+in this case is set as $region\_size= 15$ as recommended by the assignment instructions. Then, for each region we solved the
 system of equations to find an estimation of the $x-y$ velocities of the
 pixel $p$ placed at the center of the region.
 
@@ -202,12 +212,26 @@ The final step is to plot the velocity vectors on top of the image. First, we sh
 
 
 \section{Tracking}
-With the previous two tools we implemented a tracking function. To do so we first applied our Corner Detector to the image at $t_1$. These were the features that were tracked along the frames.  Then, for each pair of consecutive frames we computed its displacement vectors which allowed us to know where the features had moved in subsequent frames. 
+With the previous two tools we we able to implement a simple tracking function. To do so, we first applied our implementation of Harris Corner Detector to the image at $t_1$. These were the features that were tracked along the rest of the given frames.  Then, for each pair of consecutive frames (except for the last single frame) we computed its displacement vectors which allowed us to know where the features had moved in subsequent frames. 
 
-Since sometimes some features moved away from the image, we implemented a mechanism to check for them and remove them from the list of tracked points. This is important because the tracker would try to follow those points, resulting in incoherent information.
+Since some features may move outside the camera range, we implemented a mechanism to remove them from the list of tracked points. This is important because failing to remove these points causes the tracker to try to follow them, resulting in incoherent information. Firstly, the velocity vectors would be cut in the visualizations that $quiver$ allows, but secondly and most importantly, subsequent frames would not have enough information about where those points moved afterwards and would throw null and/or unusable values.  
 
-Once the list of feature points had been checked, we applied the Lucas-Kanade method to get the displacement vectors and produce an updated list of positions for the feature points in the next frame. 
+Once the list of feature points had been checked, we applied the Lucas-Kanade method to get the displacement vectors between each pair of subsequent frames. At this point we were able to show the image with the feature points and their corresponding vectors. Then, we updated the positions of the feature pointsaccording to their displacement and save them as the features for the next frame. 
 
-A note to keep in mind is that the returning displacement vectors have a high precision while the positions are rounded to achieve pixel accuracy. This may be a source for noise and could lead to deterioration of the tracker performance.
+A static visualization for our tracker is shown in Figure \ref{fig:tracker_pingpong} and \ref{fig:trackerperson}. The videos showing the tracking sequences are attached in the .zip file for the assignment delivery.
+
+\begin{figure}[H] \centering
+	\includegraphics[width=.8\textwidth]{imgs/tracker_pingpong.jpg}
+	\caption{Sample frame $t = 20$ in tracking Ping Pong images}
+	\label{fig:tracker_pingpong}
+\end{figure}
+
+\begin{figure}[H] \centering
+	\includegraphics[width=.8\textwidth]{imgs/tracker_person.jpg}
+	\caption{Sample frame $t = 20$ in tracking Ping Pong images}
+	\label{fig:trackerperson}
+\end{figure}
+
+A note to keep in mind is that the returning displacement vectors have a subpixel precision. Therefore the positions need to be rounded to achieve pixel accuracy. This may be a source for noise and could lead to deterioration of the tracker performance. 
 
 \end{document}
