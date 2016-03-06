@@ -1,16 +1,16 @@
 clear, close all
 
-% im_format = 'assets/person_toy/00000%03d.jpg';
-% video_name = 'person_toy';
-% nfirst = 1;
-% nim = 104;
-im_format = 'assets/pingpong/00%02d.jpeg';
-video_name = 'pingpong';
-nfirst = 0;
-nim = 52;
+im_format = 'assets/person_toy/00000%03d.jpg';
+video_name = 'person_toy';
+nfirst = 1;
+nim = 104;
+% im_format = 'assets/pingpong/00%02d.jpeg';
+% video_name = 'pingpong';
+% nfirst = 0;
+% nim = 52;
 
 %% Set video 
-save_video = false;
+save_video = true;
 frame_pause = .1;
 
 if save_video
