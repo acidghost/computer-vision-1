@@ -21,7 +21,7 @@ sigma = 1;
 
 kernel_x = gaussian(sigma, kernel_length);
 kernel_y = kernel_x';
-kernel_t = 0.5 * ones(size(kernel_x, 1), size(kernel_x, 1));
+kernel_t = 0.5 * ones(size(kernel_x));
 
 
 %% Compute image derivatives
