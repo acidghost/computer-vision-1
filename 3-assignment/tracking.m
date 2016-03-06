@@ -16,9 +16,9 @@ im_first = imread(sprintf(im_format, nfirst));
 
 % Detect corner features using Harris corner detector
 kernel_length = 11;
-sigma = 1;
-window_size = 3;
-threshold = 7;
+sigma = 1.5;
+window_size = 11;
+threshold = 10;
 [H, r, c] = harris_corners(sprintf(im_format, nfirst), kernel_length, sigma, window_size, threshold);
 
 

@@ -48,12 +48,14 @@ H = (1000 / max(max(H))) * H;
 
 
 %% Find local maxima within the window
+% Non maximum suppression
 nrows = size(H, 1);
 ncols = size(H, 2);
 k = 1;
 r = zeros(ncols + nrows, 1);
 c = zeros(ncols + nrows, 1);
 half_winsize = (window_size - 1) / 2;
+
 for y=1+half_winsize:nrows-half_winsize;
     for x=1+half_winsize:ncols-half_winsize;
         window = H((y-half_winsize):(y+half_winsize), (x-half_winsize):(x+half_winsize));
