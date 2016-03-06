@@ -21,13 +21,13 @@ sigma = 1;
 
 kernel_x = gaussian(sigma, kernel_length);
 kernel_y = kernel_x';
-kernel_t = 0.25 * ones(size(kernel_x));
+kernel_t = 0.5 * ones(size(kernel_x, 1), size(kernel_x, 1));
 
 
 %% Compute image derivatives
 Ix_full = gaussian_der(im1, kernel_x, sigma, 'x') + gaussian_der(im2, kernel_x, sigma, 'x');
 Iy_full = gaussian_der(im1, kernel_y, sigma, 'y') + gaussian_der(im2, kernel_y, sigma, 'y');
-It_full = conv2(im2, kernel_t, 'same') - conv2(im1, kernel_t, 'same');
+It_full = conv2(im1, kernel_t, 'same') - conv2(im2, kernel_t, 'same');
 
 
 %% Apply Lucas-Kanade method

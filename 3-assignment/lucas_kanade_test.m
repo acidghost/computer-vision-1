@@ -5,11 +5,11 @@ regions_size = 15;
 quiver_scale = 10;
 show_loops = 5;
 
- impath1 = 'assets/sphere1.ppm';
- impath2 = 'assets/sphere2.ppm';
+impath1 = 'assets/sphere1.ppm';
+impath2 = 'assets/sphere2.ppm';
 
- %impath1 = 'assets/synth1.pgm';
- %impath2 = 'assets/synth2.pgm';
+% impath1 = 'assets/synth1.pgm';
+% impath2 = 'assets/synth2.pgm';
 
 % impath1 = 'assets/pingpong/0000.jpeg';
 % impath2 = 'assets/pingpong/0001.jpeg';
@@ -24,6 +24,8 @@ im2 = imread(impath2);
 % Plot frames side by side
 figure
 subplot 121, imagesc(im1), hold on
-quiver(u, v, quiver_scale), hold off
+quiver(u, v, quiver_scale)
+title('First frame'), hold off
 subplot 122, imagesc(im2), hold on
-quiver(u, v, quiver_scale), hold off
+quiver(u, v, quiver_scale)
+title('Second frame'), hold off

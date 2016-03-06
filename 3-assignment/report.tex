@@ -178,47 +178,70 @@ kernel as stated in the previous section. This time the tuned parameters are as 
 % To get the full partial $x-y$ derivatives, we added the corresponding gradients from image in $t_1$ and $t_2$.
 % NOT SURE WHY? ASSIGNMENT SAYS IT?S ONLY DERIVATIVE EVALUATED AT CURRENT TIME.
 To obtain the $t$ gradient we simply convolve the images with a uniform kernel
-of value $0.5$ and then we subtract $t_2$ from $t_1$.
+of value $0.25$ and then we subtract $t_2$ from $t_1$.
 
 To exploit the assumption made by Lucas-Kanade we divide the image into
 non-overlapping regions. The region size is a parameter that can be tuned, and
-in this case is set as $region\_size= 15$ as recommended by the assignment instructions. Then, for each region we solved the
-system of equations to find an estimation of the $x-y$ velocities of the
-pixel $p$ placed at the center of the region.
+in this case is set as $region\_size= 15$ as recommended by the assignment
+instructions. Then, for each region we solved the system of equations to find an
+estimation of the $x-y$ velocities of the pixel $p$ placed at the center of the
+region.
 
 For convenience we created a helper function $solve-region$ to solve the system
 of equations for a single region. This function takes the region's center
 coordinates $p_x$ and $p_y$, the window's size and the image derivatives in $X$,
-$Y$ and $t$ direction and constructs $A = [I_x I_y)]$ and $b = -I_t$ using the
+$Y$ and $t$ direction and constructs $A = [I_x I_y]$ and $b = -I_t$ using the
 image gradients at the specified region. Those are then used to solve the
 following system:
 $$V = (A^TA)^{-1}A^Tb$$
-which yelds $V = <u, v>$, the displacement matrix for $p$, the region's center.
+which yields $V = <u, v>$, the displacement vector for $p$, the region's center.
 
-The final step is to plot the velocity vectors on top of the image. First, we show the image and $hold on$ the figure, so that then we can plot the velocities with the Matlab $quiver$ function on top of it. The results obtained for the sphere and synth images are shown in Figure \ref{fig:sphere_lucas} and \ref{fig:synth_lucas}.
+The final step is to plot the optical flow on top of the image. First, we
+show the image and $hold on$ the figure, so that then we can plot the velocities
+with the Matlab $quiver$ function on top of it. The results obtained for the
+sphere and synth images are shown in Figure \ref{fig:sphere_lucas} and
+\ref{fig:synth_lucas} respectively.
 
 
 \begin{figure}[H] \centering
-	\includegraphics[width=.8\textwidth]{imgs/sphere.jpg}
-	\caption{Optical flow as determined by Lucas Kanade algorithm, applied to Sphere images.}
+	\includegraphics[width=1\textwidth]{imgs/sphere.jpg}
+	\caption{Optical flow as determined by Lucas-Kanade algorithm, applied to Sphere images.}
 	\label{fig:sphere_lucas}
 \end{figure}
 
 \begin{figure}[H] \centering
-	\includegraphics[width=.8\textwidth]{imgs/synth.jpg}
-	\caption{Optical flow as determined by Lucas Kanade algorithm, applied to Synth images}
+	\includegraphics[width=1\textwidth]{imgs/synth.jpg}
+	\caption{Optical flow as determined by Lucas-Kanade algorithm, applied to Synth images}
 	\label{fig:synth_lucas}
 \end{figure}
 
 
 \section{Tracking}
-With the previous two tools we we able to implement a simple tracking function. To do so, we first applied our implementation of Harris Corner Detector to the image at $t_1$. These were the features that were tracked along the rest of the given frames.  Then, for each pair of consecutive frames (except for the last single frame) we computed its displacement vectors which allowed us to know where the features had moved in subsequent frames. 
+With the previous two tools we we able to implement a simple tracking function.
+To do so, we first applied our implementation of Harris Corner Detector to the
+image at $t_1$. These were the features that were tracked along the rest of the
+given frames.  Then, for each pair of consecutive frames (except for the last
+single frame) we computed its displacement vectors which allowed us to know
+where the features had moved in subsequent frames. 
 
-Since some features may move outside the camera range, we implemented a mechanism to remove them from the list of tracked points. This is important because failing to remove these points causes the tracker to try to follow them, resulting in incoherent information. Firstly, the velocity vectors would be cut in the visualizations that $quiver$ allows, but secondly and most importantly, subsequent frames would not have enough information about where those points moved afterwards and would throw null and/or unusable values.  
+Since some features may move outside the camera range, we implemented a
+mechanism to remove them from the list of tracked points. This is important
+because failing to remove these points causes the tracker to try to follow them,
+resulting in incoherent information. Firstly, the velocity vectors would be cut
+in the visualizations that $quiver$ allows, but secondly and most importantly,
+subsequent frames would not have enough information about where those points
+moved afterwards and would throw null and/or unusable values.  
 
-Once the list of feature points had been checked, we applied the Lucas-Kanade method to get the displacement vectors between each pair of subsequent frames. At this point we were able to show the image with the feature points and their corresponding vectors. Then, we updated the positions of the feature pointsaccording to their displacement and save them as the features for the next frame. 
+Once the list of feature points had been checked, we applied the Lucas-Kanade
+method to get the displacement vectors between each pair of subsequent frames.
+At this point we were able to show the image with the feature points and their
+corresponding vectors. Then, we updated the positions of the feature
+pointsaccording to their displacement and save them as the features for the next
+frame. 
 
-A static visualization for our tracker is shown in Figure \ref{fig:tracker_pingpong} and \ref{fig:trackerperson}. The videos showing the tracking sequences are attached in the .zip file for the assignment delivery.
+A static visualization for our tracker is shown in Figure
+\ref{fig:tracker_pingpong} and \ref{fig:trackerperson}. The videos showing the
+tracking sequences are attached in the .zip file for the assignment delivery.
 
 \begin{figure}[H] \centering
 	\includegraphics[width=.8\textwidth]{imgs/tracker_pingpong.jpg}
