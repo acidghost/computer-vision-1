@@ -7,7 +7,7 @@ sigma = 1.5;
 window_size = 11;
 threshold = 10;
 [H, r, c] = harris_corners(im_path, kernel_length, sigma, window_size, threshold);
-figure, mesh(H'), title('H surface plot')
+figure, mesh(H'), title(sprintf('H surface plot with \\sigma = %.1f', sigma))
 
 fprintf('%d keypoints detected\n', size(r, 1));
 
