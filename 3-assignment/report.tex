@@ -74,7 +74,7 @@ Finally, to choose the corner points we considered two conditions:
 To create an accurate corner detector we need to tune the parameters. We know
 that $\sigma$ controls the smoothness of surface $H$. When $\sigma \gg 1$, the
 smoothing is so hard that the local maxima are identified in the flat regions
-like the center of the pingpong ball in Figure \ref{fig:surface_pingpong_s10}, while
+like the center of the pingpong ball in Figure \ref{fig:surface_pingpong_s10}.  
 $\sigma \ll 1$ introduces noise by detecting corner points in the background. The
 window size determines the closeness at which points may be, therefore a larger
 window prevents them from clustering and reduces the final amount of points.
@@ -105,7 +105,7 @@ To validate our detector we compared it with the Matlab \emph{corner} function. 
 order to have a fair comparison, we make it so that the built in function
 returns the same number of points as our detector (by passing the number of
 features found by our implementation as a second parameter) and qualitatively
-comparing them by visually plotting the corner points.
+compare them by visually plotting the corner points.
  
 \begin{figure}[H] \centering
 	\begin{subfigure}{.5\textwidth} \centering
@@ -186,5 +186,12 @@ The final step is to plot the velocity vectors on top of the image. First, we sh
 
 
 \section{Tracking}
+With the previous two tools we implemented a tracking function. To do so we first applied our Corner Detector to the image at $t_1$. These were the features that were tracked along the frames.  Then, for each pair of consecutive frames we computed its displacement vectors which allowed us to know where the features had moved in subsequent frames. 
+
+Since sometimes some features moved away from the image, we implemented a mechanism to check for them and remove them from the list of tracked points. This is important because the tracker would try to follow those points, resulting in incoherent information.
+
+Once the list of feature points had been checked, we applied the Lucas-Kanade method to get the displacement vectors and produce an updated list of positions for the feature points in the next frame. 
+
+A note to keep in mind is that the returning displacement vectors have a high precision while the positions are rounded to achieve pixel accuracy. This may be a source for noise and could lead to deterioration of the tracker performance.
 
 \end{document}

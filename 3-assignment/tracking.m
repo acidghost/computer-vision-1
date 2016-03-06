@@ -1,9 +1,5 @@
 clear, close all
 
-
-save_video = false;
-frame_pause = .1;
-
 % im_format = 'assets/person_toy/00000%03d.jpg';
 % video_name = 'person_toy';
 % nfirst = 1;
@@ -13,27 +9,31 @@ video_name = 'pingpong';
 nfirst = 0;
 nim = 52;
 
+%% Set video 
+save_video = false;
+frame_pause = .1;
 
+if save_video
+    vid = VideoWriter(video_name, 'Motion JPEG AVI');
+    vid.FrameRate = 10;
+    open(vid)
+end
 
-% Detect corner features using Harris corner detector
+%% Detect features using Harris corner detector
 kernel_length = 11;
 sigma = 1.5;
 window_size = 11;
 threshold = 10;
 [H, r, c] = harris_corners(sprintf(im_format, nfirst), kernel_length, sigma, window_size, threshold);
 
-
+%% Set parameters for Lucas Kanade
 regions_size = 15;
-
 u = r; v = c;
 fig = figure; figure(fig)
+
+%% Track using Lucas Kanade optical flow estimation
 % For each pair of consecutive frames, compute displacement vectors
 % of keypoints to track using Lucas-Kanade optical flow estimation
-if save_video
-    vid = VideoWriter(video_name, 'Motion JPEG AVI');
-    vid.FrameRate = 10;
-    open(vid)
-end
 im_indexes = nfirst+1:nim;
 for i = im_indexes
     impath1 = sprintf(im_format, i - 1);
@@ -52,6 +52,7 @@ for i = im_indexes
     imagesc(im1), hold on
     plot(v, u, 'bo')
     quiver(v, u, dv, du, 1, 'r'), hold off
+    
     if save_video
         frame = getframe(fig);
         fr = frame.cdata;
@@ -63,6 +64,8 @@ for i = im_indexes
     u = u + du;
     v = v + dv;
 end
+
+%% Save video
 if save_video
     close(vid)
 end
