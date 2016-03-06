@@ -1,5 +1,5 @@
 function [ keypoints_r, keypoints_c ] = rm_keypoints( keypoints, region_size, imsize )
-%RM_KEYPOINTS Remove keypoints for which the corrisponding region
+%RM_KEYPOINTS Remove keypoints for which the corresponding region
 %             falls off the image boundaries
 half_region = floor(region_size / 2);
 j = 1;

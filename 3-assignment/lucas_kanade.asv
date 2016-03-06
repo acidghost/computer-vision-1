@@ -15,21 +15,19 @@ end
 [nrows, ncols] = size(im1);
 imsize = [nrows, ncols];
 
-%% Compute Gaussian partial derivatives
+%% Create kernels
 kernel_length = 5;
 sigma = 1;
-siz = (kernel_length-1) / 2;
-kernel_size = -siz:siz;
 
 kernel_x = gaussian(sigma, kernel_length);
 kernel_y = kernel_x';
-kernel_xd = (kernel_size .* kernel_x) / (sigma^2);
+kernel_t = 0.5 * ones(size(kernel_x));
 
-%% Apply gaussian derivative to compute image derivatives
+
+%% Compute image derivatives
 Ix_full = gaussian_der(im1, kernel_x, sigma, 'x') + gaussian_der(im2, kernel_x, sigma, 'x');
 Iy_full = gaussian_der(im1, kernel_y, sigma, 'y') + gaussian_der(im2, kernel_y, sigma, 'y');
-
-It_full = conv2(im1, .5 * ones(size(kernel_xd)), 'same') + conv2(im2, -.5 * ones(size(kernel_xd)), 'same');
+It_full = conv2(im1, kernel_t, 'same') + conv2(im2, -1 * kernel_t, 'same');
 
 
 %% Apply Lucas-Kanade method

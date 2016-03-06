@@ -117,12 +117,15 @@ In case of the Ping Pong image, $n_corners = 63$. On the one hand, our detector 
 In case of the Toy person image, $n_corners = 27$. Our detector finds more corner points in the frame of the power outlet and detects three of the four edges of the white central box while the Matlab function focuses more on the toy.
 
 \section{Lucas-Kanade Algorithm for Optical Flow}
-In order to implement the Lucas Kanade method for Optical Flow we started by computing the $x-y$ gradients of the images using our first order Gaussian kernel as stated in the previous section. 
-
-% To get the full partial $x-y$ derivatives, we added the corresponding gradients from image in $t_1$ and $t_2$. % NOT SURE WHY? ASSIGNMENT SAYS IT?S ONLY DERIVATIVE EVALUATED AT CURRENT TIME.
+In order to implement the Lucas Kanade method for Optical Flow we started by computing the $x-y$ gradients of the images using our first order Gaussian kernel as stated in the previous section. % To get the full partial $x-y$ derivatives, we added the corresponding gradients from image in $t_1$ and $t_2$. % NOT SURE WHY? ASSIGNMENT SAYS IT?S ONLY DERIVATIVE EVALUATED AT CURRENT TIME.
 To obtain the $t$ gradient we simply convolve the images with a uniform kernel of value $0.5$ for image in $t_1$ and a value of $- 0.5$ for image in $t_2$. 
 
-Then we divide the image into non overlapping regions, and loop through them. For each section we solve the system of equations to find velocities.
+To we exploit the assumption made by Lucas-Kanade we divided the image into non-overlapping regions. The region size is a parameter that can be tuned, and in this case is set as $size_region = 15$. Then, for each region we solved the system of equations to find the $x-y$ velocities.
+
+For convenience we created a helper function $solve-region$ to solve the system of equations. This function simply takes the corresponding region gradients and constructs two matrices: $A = [I_x I_y)]$ and $b = -I_t$. The previous results in a matrix that stores the $x-y$ velocities per region on the central pixel of the region. 
+
+The final step is to plot the velocity vectors on top of the image. First, we show the image and $hold on$ the figure, so that then we can plot the velocities with the Matlab $quiver$ function on top of it. The results obtained for the sphere and synth images are shown in Figure \ref{fig:sphere_lucas} and \ref{fig:synth_lucas}.
+
 
 \begin{figure}[H] \centering
 	\includegraphics[width=.8\textwidth]{imgs/sphere.jpg}

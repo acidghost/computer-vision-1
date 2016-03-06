@@ -3,13 +3,13 @@ clear, close all
 
 regions_size = 15;
 quiver_scale = 10;
-show_loops = 10;
+show_loops = 5;
 
-% impath1 = 'assets/sphere1.ppm';
-% impath2 = 'assets/sphere2.ppm';
+ impath1 = 'assets/sphere1.ppm';
+ impath2 = 'assets/sphere2.ppm';
 
-impath1 = 'assets/synth1.pgm';
-impath2 = 'assets/synth2.pgm';
+ %impath1 = 'assets/synth1.pgm';
+ %impath2 = 'assets/synth2.pgm';
 
 % impath1 = 'assets/pingpong/0000.jpeg';
 % impath2 = 'assets/pingpong/0001.jpeg';
