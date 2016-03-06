@@ -3,7 +3,6 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{url}
 \usepackage{amsmath}
 \usepackage{float}
 
@@ -29,22 +28,24 @@ vertical Gaussian kernels, and applied a Gaussian first order derivative kernel 
 \ref{fig:partialDerivatives_pingpong} and \ref{fig:partialDerivatives_person}.
 
 \begin{figure}[H] \centering
-	\includegraphics[width=.8\textwidth]{imgs/derivatives_pingpong.jpg}
+	\includegraphics[width=1\textwidth]{imgs/derivatives_pingpong.jpg}
 	\caption{Image gradients for first Ping Pong image}
 	\label{fig:partialDerivatives_pingpong}
 \end{figure}
 
 \begin{figure}[H] \centering
-	\includegraphics[width=.8\textwidth]{imgs/derivatives_person.jpg}
+	\includegraphics[width=1\textwidth]{imgs/derivatives_person.jpg}
 	\caption{Image gradients for first Toy Person image}
 	\label{fig:partialDerivatives_person}
 \end{figure}
 
 Then, we created the $Q$ matrix, first by squaring the gradients (i.e.
-($I_x)^2$ and ($I_y)^2$) and multiplying them with each other (i.e. $I_x *
+$I_{x}^2$ and $I_{y}^2$) and multiplying them with each other (i.e. $I_x
 I_y$), and then by convolving the resulting with a Gaussian kernel. With these
 components we were able to compute $H$ using Equation $12$ shown in the
-assignment instructions. A visualization for the scaled surfaces are shown in
+assignment instructions. We also scale the corner metric by a $\frac{1000}{
+max(H)}$ factor; this to avoid using a threshold value of the magnitude of
+$e^{-6}$. A visualization for the scaled surfaces are shown in
 Figure \ref{fig:surface_pingpong} and \ref{fig:surface_person}.
 
 \begin{figure}[H] \centering
@@ -70,26 +71,50 @@ Finally, to choose the corner points we considered two conditions:
 		value than a given threshold.
 \end{enumerate}
 
-To create an accurate corner detector we need to tune the parameters. We know that $\sigma$ controls the smoothness of surface $H$. When $\sigma >> 1$, the main corners are detected but there is misplacement on their location, while $\sigma << 1$ introduces noise by detecting corner points in the background. The window size determines the closeness at which points may be, therefore a larger window prevents them from clustering and reduces the final amount of points. Finally, the threshold regulates the pressure for candidate points to become corner points. Thus, a higher threshold reduces the final number of points.
- 
-After tuning, the chosen values for the final detector are:
-\begin{itemize}
-	\item $kernel  length = 11$
-	\item $\sigma = 1.5$
-	\item $window  size = 11$
-	\item $threshold = 10$
-\end{itemize}
+To create an accurate corner detector we need to tune the parameters. We know
+that $\sigma$ controls the smoothness of surface $H$. When $\sigma \gg 1$, the
+smoothing is so hard that the local maxima are identified in the flat regions
+like the center of the pingpong ball in Figure \ref{fig:surface_pingpong_s10}, while
+$\sigma \ll 1$ introduces noise by detecting corner points in the background. The
+window size determines the closeness at which points may be, therefore a larger
+window prevents them from clustering and reduces the final amount of points.
+Finally, the threshold regulates the pressure for candidate points to become
+corner points. Thus, a higher threshold reduces the final number of points.
 
-To validate our detector we compared it with the Matlab corner function. In order to have a fair comparison, we make it so that the built in function returns the same number of points as our detector and qualitatively compare them by visually plotting the corner points.
+\begin{figure}[H] \centering
+	\includegraphics[width=.8\textwidth]{imgs/surface_pingpong_s10.jpg}
+	\caption{$H$ surface for first Ping Pong image with $\sigma$ set to $10$. It is
+	easy to see that the entire ball could be identified as a feature.}
+	\label{fig:surface_pingpong_s10}
+\end{figure}
+
+After tuning, the chosen values for the final detector are:
+
+\begin{center}
+	\begin{tabular}{| c | c |}
+		\hline
+		\textbf{kernel length} & 11   \\ \hline
+		\textbf{$\sigma$}      & 1.5  \\ \hline
+		\textbf{window size}   & 11   \\ \hline
+		\textbf{threshold}     & 10   \\
+		\hline
+	\end{tabular}
+\end{center}
+
+To validate our detector we compared it with the Matlab \emph{corner} function. In
+order to have a fair comparison, we make it so that the built in function
+returns the same number of points as our detector (by passing the number of
+features found by our implementation as a second parameter) and qualitatively
+comparing them by visually plotting the corner points.
  
 \begin{figure}[H] \centering
 	\begin{subfigure}{.5\textwidth} \centering
-		\includegraphics[width=.9\textwidth]{imgs/ourCorners_pingpong.jpg}
+		\includegraphics[width=1\textwidth]{imgs/ourCorners_pingpong.jpg}
 		\caption{Our implementation of Harris Corner Detector.}
 		\label{fig:ourCorners_pingpong}
 	\end{subfigure}%
-	\begin{subfigure}{.5\textwidth}	\centering
-		\includegraphics[width=.9\textwidth]{imgs/matlabCorners_pingpong.jpg}
+	\begin{subfigure}{.5\textwidth} \centering
+		\includegraphics[width=1\textwidth]{imgs/matlabCorners_pingpong.jpg}
 		\caption{Matlab's built in Corner function.}
 		\label{fig:matlabCorners_pingpong}
 	\end{subfigure}
@@ -97,16 +122,31 @@ To validate our detector we compared it with the Matlab corner function. In orde
 	\label{fig:corners_pingpong}
 \end{figure}
 
-In case of the Ping Pong image, $n_corners = 63$. On the one hand, our detector is able to detect points in the ball and along the sleeve. On the other hand, the Matlab function introduces noisy points in the background and fails to detect the racket. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.8\textwidth]{imgs/ball_feature_corners.jpg}
+	\caption{Zoomed region around the Ping Pong ball. In blue are the detected
+	features and in red are the corresponding windows. It's easy to see their
+	corner-like shape.}
+	\label{fig:ball_corners}
+\end{figure}
+
+In case of the Ping Pong image our feature implementation detects $n_{corners} =
+63$ (given the aforementioned parameters) and the results are visible in Figure
+\ref{fig:ourCorners_pingpong}. On one hand, our detector is able to detect
+points around the ball (Figure \ref{fig:ball_corners}) and along the sleeve. On
+the other hand, the Matlab function introduces noisy points in the background
+and fails to detect the racket, as shown in Figure
+\ref{fig:matlabCorners_pingpong}.
 
 \begin{figure}[H] \centering
 	\begin{subfigure}{.5\textwidth} \centering
-		\includegraphics[width=.9\textwidth]{imgs/ourCorners_person.jpg}
+		\includegraphics[width=1\textwidth]{imgs/ourCorners_person.jpg}
 		\caption{Our implementation of Harris Corner Detector.}
 		\label{fig:ourCorners_person}
 	\end{subfigure}%
 	\begin{subfigure}{.5\textwidth}	\centering
-		\includegraphics[width=.9\textwidth]{imgs/matlabCorners_person.jpg}
+		\includegraphics[width=1\textwidth]{imgs/matlabCorners_person.jpg}
 		\caption{Matlab's built in Corner function.}
 		\label{fig:matlabCorners_person}
 	\end{subfigure}
@@ -114,7 +154,12 @@ In case of the Ping Pong image, $n_corners = 63$. On the one hand, our detector 
 	\label{fig:corners_person}
 \end{figure}
 
-In case of the Toy person image, $n_corners = 27$. Our detector finds more corner points in the frame of the power outlet and detects three of the four edges of the white central box while the Matlab function focuses more on the toy.
+In case of the Toy Person image, with the given parameters, out implementation
+detects $n_{corners} = 27$. Our detector finds more corner points in the frame
+of the power outlet and detects three of the four edges of the white central
+box, as show in Figure \ref{fig:ourCorners_person}. The Matlab function
+instead focuses more on the toy and its detected features seem more uniquely
+identifiable in the image.
 
 \section{Lucas-Kanade Algorithm for Optical Flow}
 In order to implement the Lucas Kanade method for Optical Flow we started by computing the $x-y$ gradients of the images using our first order Gaussian kernel as stated in the previous section. % To get the full partial $x-y$ derivatives, we added the corresponding gradients from image in $t_1$ and $t_2$. % NOT SURE WHY? ASSIGNMENT SAYS IT?S ONLY DERIVATIVE EVALUATED AT CURRENT TIME.
