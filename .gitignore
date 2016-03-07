@@ -4,7 +4,7 @@
 *.synctex.gz
 *.bbl
 *.blg
-*.pdf
+report.pdf
 *.avi
 *.asv
 *.tex.swp
