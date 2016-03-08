@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-if [ -d "vlfeat-0.9.20" ]; then
+vlf_version=vlfeat-0.9.20
+
+if [ -d "$vlf_version" ]; then
 	echo 'VLFeat already present'
 else
-	wget http://www.vlfeat.org/download/vlfeat-0.9.20-bin.tar.gz
-	tar xzvf vlfeat-0.9.20-bin.tar.gz
-	rm vlfeat-0.9.20-bin.tar.gz
+	wget "http://www.vlfeat.org/download/"${vlf_version}"-bin.tar.gz"
+	tar xzvf ${vlf_version}"-bin.tar.gz"
+	rm ${vlf_version}"-bin.tar.gz"
 fi
