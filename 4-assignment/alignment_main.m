@@ -15,7 +15,7 @@ matches = vl_ubcmatch(desc1, desc2);
 
 N = 200;
 nmatches = size(matches, 2);
-P = 2;
+P = 3;
 max_inliers_iteration = 1;
 best_params = zeros(6, 1);
 radius = 10;
@@ -27,23 +27,29 @@ plot(matches_x1, matches_y1, 'ro'), hold off
 inliers_count = zeros(N, 1);
 for n = 1:N
     fprintf('Iteration %d\n', n)
-    
+
     rndIDX = randperm(nmatches);
     sample = matches(:, rndIDX(1:P));
     sampled1 = frames1(:, sample(1, :));
     sampled2 = frames2(:, sample(2, :));
-    
+
     A = [sampled1(1, 1) sampled1(2, 1) 0 0 1 0;...
          0 0 sampled1(1, 1) sampled1(2, 1) 0 1;...
          sampled1(1, 2) sampled1(2, 2) 0 0 1 0;...
-         0 0 sampled1(1, 2) sampled1(2, 2) 0 1];
-    b = [sampled2(1, 1); sampled2(2, 1); sampled2(1, 2); sampled2(2, 2)];
+         0 0 sampled1(1, 2) sampled1(2, 2) 0 1;...
+         sampled1(1, 3) sampled1(2, 3) 0 0 1 0;...
+         0 0 sampled1(1, 3) sampled1(2, 3) 0 1];
+
+    b = [sampled2(1, 1); sampled2(2, 1);...
+         sampled2(1, 2); sampled2(2, 2);...
+         sampled2(1, 3); sampled2(2, 3)];
+
     x = pinv(A) * b;
-    
+
     % transform matched points from im1 using parameters
     [ transformed_x, transformed_y ] = transform_points(matches_x1, matches_y1, x);
-    
-    
+
+
     % count inliers
     matches_x2 = frames2(1, matches(2, :));
     matches_y2 = frames2(2, matches(2, :));
@@ -66,8 +72,8 @@ for n = 1:N
         max_inliers_iteration = n;
         disp('New best!')
     end
-    
-    
+
+
     % remove transformed points outside image
     k = 1;
     transformed_inside_x = zeros(1, nmatches);
