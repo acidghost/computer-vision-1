@@ -8,6 +8,9 @@ impath2 = 'assets/boat/img2.pgm';
 im1 = im2single(imread(impath1));
 im2 = im2single(imread(impath2));
 
+[imsizey, imsizex] = size(im1);
+
+
 [frames1, desc1] = vl_sift(im1);
 [frames2, desc2] = vl_sift(im2);
 
@@ -19,20 +22,21 @@ P = 3;
 max_inliers_iteration = 1;
 best_params = zeros(6, 1);
 radius = 10;
-figure
-subplot 121, imagesc(im1), colormap gray, hold on
 matches_x1 = frames1(1, matches(1, :));
 matches_y1 = frames1(2, matches(1, :));
-plot(matches_x1, matches_y1, 'ro'), hold off
 inliers_count = zeros(N, 1);
+
+figure    % open figure to show matches
 for n = 1:N
     fprintf('Iteration %d\n', n)
 
-    rndIDX = randperm(nmatches);
-    sample = matches(:, rndIDX(1:P));
+
+    % sample P matches (pairs of points)
+    sample = get_sample(nmatches, P, matches);
     sampled1 = frames1(:, sample(1, :));
     sampled2 = frames2(:, sample(2, :));
 
+    % build A matrix
     A = [sampled1(1, 1) sampled1(2, 1) 0 0 1 0;...
          0 0 sampled1(1, 1) sampled1(2, 1) 0 1;...
          sampled1(1, 2) sampled1(2, 2) 0 0 1 0;...
@@ -40,14 +44,17 @@ for n = 1:N
          sampled1(1, 3) sampled1(2, 3) 0 0 1 0;...
          0 0 sampled1(1, 3) sampled1(2, 3) 0 1];
 
+    % build b vector
     b = [sampled2(1, 1); sampled2(2, 1);...
          sampled2(1, 2); sampled2(2, 2);...
          sampled2(1, 3); sampled2(2, 3)];
 
-    x = pinv(A) * b;
+    % solve system of equations
+    params = pinv(A) * b;
+
 
     % transform matched points from im1 using parameters
-    [ transformed_x, transformed_y ] = transform_points(matches_x1, matches_y1, x);
+    [ transformed_x, transformed_y ] = transform_points(matches_x1, matches_y1, params);
 
 
     % count inliers
@@ -64,36 +71,54 @@ for n = 1:N
             inliers_count(n) = inliers_count(n) + 1;
         end
     end
-    fprintf('Found %d inliers\n', inliers_count(n))
+    fprintf('Found %d inliers over %d matches (%.2f)\n',...
+        inliers_count(n), nmatches, inliers_count(n) / nmatches)
     
     % store parameters if there's improvement
     if inliers_count(n) >= inliers_count(max_inliers_iteration)
-        best_params = x;
+        best_params = params;
         max_inliers_iteration = n;
         disp('New best!')
     end
 
 
-    % remove transformed points outside image
-    k = 1;
-    transformed_inside_x = zeros(1, nmatches);
-    transformed_inside_y = zeros(1, nmatches);
-    for i = 1:nmatches
-        px = transformed_x(1, i);
-        py = transformed_y(1, i);
-        if px > 0 && px < size(im1, 2) && py > 0 && py < size(im1, 1)
-            transformed_inside_x(1, k) = px;
-            transformed_inside_y(1, k) = py;
-            k = k + 1;
-        end
-    end
-    transformed_inside_x = transformed_inside_x(transformed_inside_x ~= 0);
-    transformed_inside_y = transformed_inside_y(transformed_inside_y ~= 0);
-        
-    subplot 122, imagesc(im2), colormap gray, hold on
-    plot(transformed_inside_x, transformed_inside_y, 'ro'), hold off
-    drawnow, pause(.05)
+    % sample 50 matches and plot them with lines
+    [ sampled_tx, sampled_idx ] = get_sample(nmatches, 50, transformed_x);
+    sampled_ty = transformed_y(1, sampled_idx);
+    sampled_x = matches_x1(1, sampled_idx);
+    sampled_y = matches_y1(1, sampled_idx);
+
+
+    % find transformation boundaries
+    [ xsize, ysize ] = find_transformation_bound(size(im1), params);
+
     
+    space = 20;   % add some space between images
+    halfimxsize = max(imsizex, xsize);
+    imfullx = imsizex + halfimxsize + space;
+    imfully = max([imsizey ysize]);
+    halfimy = round((imfully - imsizey) / 2);
+
+    % create final image containing both images and
+    % sampled matches connected by lines
+    imfull = zeros(imfully, imfullx);
+    imfull(1+halfimy:imsizey+halfimy, 1:imsizex) = im1;
+    imstart = imsizex + space;
+    imfull(1+halfimy:imsizey+halfimy, imstart:imstart+imsizex-1) = im2;
+
+    % translate sampled points
+    full_sampled_tx = sampled_tx + 20 + imsizex;
+    full_sampled_ty = sampled_ty + halfimy;
+    full_sampled_y = sampled_y + halfimy;
+
+    imagesc(imfull), colormap gray, hold on
+    plot(sampled_x, full_sampled_y, 'ro')
+    plot(full_sampled_tx, full_sampled_ty, 'ro')
+    line([sampled_x; full_sampled_tx], [full_sampled_y; full_sampled_ty])
+    title(sprintf('%d inliers over %d matches (%.2f)',...
+        inliers_count(n), nmatches, inliers_count(n) / nmatches))
+    hold off; drawnow, pause(1)
+
     fprintf('\n')
 end
 
