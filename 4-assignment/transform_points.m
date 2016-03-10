@@ -3,17 +3,15 @@ function [ transformed_x, transformed_y ] = transform_points( x, y, params )
 %                 with 'params' parameters
 
 
-[ affine1, affine2 ] = get_affine(params);
-
-
 npts = size(x, 2);
 transformed_x = zeros(1, npts);
 transformed_y = zeros(1, npts);
 for i = 1:npts
-    p = transform_point(x(i), y(i), affine1, affine2);
+    p = transform_point(x(i), y(i), params);
     transformed_x(1, i) = p(1);
     transformed_y(1, i) = p(2);
 end
+
 
 end
 

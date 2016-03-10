@@ -16,7 +16,7 @@ im2 = im2single(imread(impath2));
 
 matches = vl_ubcmatch(desc1, desc2);
 
-N = 200;
+N = 50;
 nmatches = size(matches, 2);
 P = 3;
 max_inliers_iteration = 1;
@@ -117,11 +117,15 @@ for n = 1:N
     line([sampled_x; full_sampled_tx], [full_sampled_y; full_sampled_ty])
     title(sprintf('%d inliers over %d matches (%.2f)',...
         inliers_count(n), nmatches, inliers_count(n) / nmatches))
-    hold off; drawnow, pause(1)
+    hold off; drawnow, pause(.1)
 
     fprintf('\n')
 end
 
 
 % transform im1 using found parameters
+imtrans = transform_image(im1, best_params);
+figure  % plot transformed im1 and im2
+subplot 121, imagesc(imtrans), colormap gray
+subplot 122, imagesc(im2), colormap gray
 
