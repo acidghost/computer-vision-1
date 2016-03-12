@@ -130,6 +130,22 @@ using the inverted transformation matrix.
 \end{figure}
 
 % TODO discuss about N
+% N > log(1 - p) / log(1 - (1 - e)^s)
+By using the following formula we can compute how sufficiently big $N$ has to be
+in order to have a likelihood of success, let's say, of $p = 0.99$.
+
+\begin{equation}
+	N > \frac{\ln(1 - p)}{\ln(1 - (1 - e)^P)}
+	\label{eq:ransac_n}
+\end{equation}
+
+In equation \ref{eq:ransac_n} $p$ is the likelihood of success, $e$ is the
+percentage of outliers (so $1 - e$ is the percentage of inliers) and $P$ is the
+sample size ($P = 3$ in our case). Suppose we have $e = 0.5$, so that we expect
+to encounter 50\% of outliers, we can plug in those values and find a minimum
+value for $N$ that guarantees us to find the best set of parameters with a
+probability of 99\%, which is $34.5$.
+
 % TODO differences between our image transformation fn and matlab's imtransform
 
 \section{Image Stitching}
