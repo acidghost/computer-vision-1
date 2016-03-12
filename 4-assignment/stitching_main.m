@@ -26,13 +26,13 @@ radius = 10;
 
 
 %% Estimate length
-[estimated_x estimated_y] = find_transformation_bound([imsizey imsizex], parameters);
+[estimated_x estimated_y] = find_transformation_bound([imsizey imsizex], best_params);
 
  
 %% Stitch
 new_image = zeros(estimated_y, estimated_x);
 
-im2_t = transform_image(im1, parameters);
+im2_t = transform_image(im1, best_params);
 
 for i = 1:estimated_y
    for j = 1:estimated_x

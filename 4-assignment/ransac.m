@@ -1,7 +1,8 @@
 function [ best_params, inliers_count ] = ransac( N, P, radius, frames1, frames2, matches, im1, im2 )
 %RANSAC Perform RANSAC
 
-[imsizey, imsizex] = size(im1);
+[im1sizey, im1sizex] = size(im1);
+[im2sizey, im2sizex] = size(im2);
 
 nmatches = size(matches, 2);
 matches_x1 = frames1(1, matches(1, :));
@@ -77,24 +78,24 @@ for n = 1:N
 
 
     % find transformation boundaries
-    [ xsize, ysize ] = find_transformation_bound(size(im1), params);
+    [ xsize, ysize ] = find_transformation_bound([im1sizey, im1sizex], params);
 
     
     space = 20;   % add some space between images
-    halfimxsize = max(imsizex, xsize);
-    imfullx = imsizex + halfimxsize + space;
-    imfully = max([imsizey ysize]);
-    halfimy = round((imfully - imsizey) / 2);
+    halfimxsize = max([im2sizex xsize]);
+    imfullx = im1sizex + halfimxsize + space;
+    imfully = max([im1sizey im2sizey ysize]);
+    halfimy = round((imfully - im1sizey) / 2);
 
     % create final image containing both images and
     % sampled matches connected by lines
     imfull = zeros(imfully, imfullx);
-    imfull(1+halfimy:imsizey+halfimy, 1:imsizex) = im1;
-    imstart = imsizex + space;
-    imfull(1+halfimy:imsizey+halfimy, imstart:imstart+imsizex-1) = im2;
+    imfull(1+halfimy:im1sizey+halfimy, 1:im1sizex) = im1;
+    imstart = im1sizex + space;
+    imfull(1+halfimy:im2sizey+halfimy, imstart:imstart+im2sizex-1) = im2;
 
     % translate sampled points
-    full_sampled_tx = sampled_tx + 20 + imsizex;
+    full_sampled_tx = sampled_tx + space + im1sizex;
     full_sampled_ty = sampled_ty + halfimy;
     full_sampled_y = sampled_y + halfimy;
 
