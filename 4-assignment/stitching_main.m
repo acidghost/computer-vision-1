@@ -1,18 +1,28 @@
 clear, close all
 
-%% Read images
-% im1 is left, im2 is right
+%% Detect frames (keypoints), descriptors and matches
 impath1 = 'assets/left.jpg';
 impath2 = 'assets/right.jpg';
+im1 = imread(impath1);
+im2 = imread(impath2);
 
-im1 = im2single(imread(impath1));
-im2 = im2single(imread(impath2));
+[imsizey, imsizex, channels] = size(im2);
 
-[imsizey, imsizex, channels] = size(im1);
+if channels ~= 1
+    im1 = rgb2gray(im1);
+    im2 = rgb2gray(im2);
+end
 
-%% Get keypoints
-N = 5;
-[parameters keypoints_x1 keypoints_y1] = get_best_transformation(im1, im2, N);
+im1 = im2single(im1);
+im2 = im2single(im2);
+
+[frames1, frames2, matches] = get_matches(im1, im2);
+
+%% Set up and perform RANSAC
+N = 1;
+P = 3;
+radius = 10;
+[best_params, inliers_count] = ransac(N, P, radius, frames1, frames2, matches, im1, im2);
 
 
 %% Estimate length

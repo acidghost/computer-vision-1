@@ -1,7 +1,6 @@
 function [ best_params, inliers_count ] = ransac( N, P, radius, frames1, frames2, matches, im1, im2 )
 %RANSAC Perform RANSAC
 
-
 [imsizey, imsizex] = size(im1);
 
 nmatches = size(matches, 2);
@@ -69,7 +68,8 @@ for n = 1:N
     end
 
 
-    % sample 50 matches and plot them with lines
+    %% Sample and plot
+    % sample 50 matches
     [ sampled_tx, sampled_idx ] = get_sample(nmatches, 50, transformed_x);
     sampled_ty = transformed_y(1, sampled_idx);
     sampled_x = matches_x1(1, sampled_idx);
