@@ -108,7 +108,8 @@ defined as the number of transformed keypoints that fall under a distance of
 If the count of inliers is greater than the one of the previous best iteration,
 we store the transformation parameters and continue the loop. After $N$ loops
 have been executed, the \texttt{ransac} function returns the best set of model
-parameters and the count of inliers for each iteration. % and the keypoints sampled that lead to the best parameters
+parameters, the count of inliers for each iteration and the keypoints sampled
+that lead to the best parameters.
 
 In Figure \ref{fig:aligned_im1} we show the first boat image transformed so to
 match the alignment of the second boat image. Instead in Figure
@@ -129,8 +130,6 @@ using the inverted transformation matrix.
 	\label{fig:aligned_im2}
 \end{figure}
 
-% TODO discuss about N
-% N > log(1 - p) / log(1 - (1 - e)^s)
 By using the following formula we can compute how sufficiently big $N$ has to be
 in order to have a likelihood of success, let's say, of $p = 0.99$.
 
@@ -146,7 +145,34 @@ to encounter 50\% of outliers, we can plug in those values and find a minimum
 value for $N$ that guarantees us to find the best set of parameters with a
 probability of 99\%, which is $34.5$.
 
-% TODO differences between our image transformation fn and matlab's imtransform
+In Figure \ref{fig:imtransform_vs_custom} we show a comparison of the
+transformed images using the function that we implemented (left column) and
+Matlab's \texttt{imtransform} and \texttt{maketform} (right column). Both
+functions implement nearest neighbor sampling and no differences are noticeable
+by the naked eye. To transform the first image with the affine matrix, we first
+find the size of the transformed image by computing minima and maxima (by
+transforming the image corners with inverse warping, e.g. top-left, top-right,
+bottom-left and
+bottom-right) for each axis and then their difference. Then for each point $(x,
+y)$ in the new image we compute the forward transformation of the $(x+x_{min},
+y+y_{min})$ point and if it is in the boundaries of the image to be transformed,
+we round it (so applying nearest neighbor interpolation) and put the value from
+the image at that point into the new image at $(x, y)$, otherwise we put a zero.
+To transform the second image and align it to the first one we use the same
+function but applying a forward warping where we applied an inverse one and vice
+versa. Our custom function can be found in \texttt{transform\_image.m}.
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=1\textwidth]{imgs/imtransform_vs_custom.jpg}
+	\caption{In the left column are the image transformed with the function
+		\texttt{transform\_image.m} that we implemented. In the right
+		column instead are the images transformed using Matlab's
+		\texttt{imtransform}}.
+	\label{fig:imtransform_vs_custom}
+\end{figure}
+
+
 
 \section{Image Stitching}
 - convert rgb images to greyscale
