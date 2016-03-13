@@ -37,7 +37,7 @@ mean2 = round(mean(bestSample2, 2));
 temp_image = zeros(size(im2));
 temp_image(mean2(2), mean2(1)) = 255;
 
-background = transform_image(temp_image, best_params);
+background = transform_image(temp_image, best_params, 1);
 
 % Transform mean and image 2
 [~,ind] = max(background(:));
