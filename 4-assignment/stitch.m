@@ -1,8 +1,21 @@
-function [ new_image ] = stitch( im1, im2, best_params, bestSample1, bestSample2 )
+function [ new_image ] = stitch( im1, im2 )
 %STITCH Stitch two images togheter
 
 
 [im1sizey, im1sizex] = size(im1);
+
+%% Detect frames (keypoints), descriptors and matches
+im1 = im2single(im1);
+im2 = im2single(im2);
+
+[frames1, frames2, matches] = get_matches(im1, im2);
+
+%% Set up and perform RANSAC
+N = 35;
+P = 3;
+radius = 10;
+
+[best_params, ~, bestSample1, bestSample2] = ransac(N, P, radius, frames1, frames2, matches, im1, im2);
 
 %% Transform second image
 % Mean coordinates of features in each image
