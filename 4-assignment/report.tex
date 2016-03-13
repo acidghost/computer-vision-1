@@ -108,7 +108,8 @@ defined as the number of transformed keypoints that fall under a distance of
 If the count of inliers is greater than the one of the previous best iteration,
 we store the transformation parameters and continue the loop. After $N$ loops
 have been executed, the \texttt{ransac} function returns the best set of model
-parameters and the count of inliers for each iteration.
+parameters, the count of inliers for each iteration and the samples that led to
+the best parameters.
 
 In Figure \ref{fig:aligned_im1} we show the first boat image transformed so to
 match the alignment of the second boat image. Instead in Figure
