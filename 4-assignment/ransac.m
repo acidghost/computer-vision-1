@@ -1,4 +1,4 @@
-function [ best_params, inliers_count bestSample1 bestSample2] = ransac( N, P, radius, frames1, frames2, matches, im1, im2 )
+function [ best_params, inliers_count, bestSample1, bestSample2 ] = ransac( N, P, radius, frames1, frames2, matches, im1, im2 )
 %RANSAC Perform RANSAC
 
 [im1sizey, im1sizex] = size(im1);
@@ -51,6 +51,7 @@ for n = 1:N
 
     % count inliers
     inliers_count(n) = 0;
+    inliers = zeros(1, nmatches);
     for i = 1:nmatches
         mx1 = transformed_x(1, i);
         my1 = transformed_y(1, i);
@@ -59,6 +60,7 @@ for n = 1:N
         dist = norm([mx1 my1] - [mx2 my2]);
         if dist <= radius
             inliers_count(n) = inliers_count(n) + 1;
+            inliers(i) = 1;
         end
     end
     fprintf('Found %d inliers over %d matches (%.2f)\n',...
@@ -69,7 +71,7 @@ for n = 1:N
         best_params = params;
         max_inliers_iteration = n;
         bestSample1 = sampled1;
-        bestSample2 = sampled2; 
+        bestSample2 = sampled2;
         disp('New best!')
     end
 

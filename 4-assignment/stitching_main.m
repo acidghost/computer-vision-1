@@ -20,16 +20,18 @@ im2 = im2single(im2);
 [frames1, frames2, matches] = get_matches(im1, im2);
 
 %% Set up and perform RANSAC
-N = 5;
+N = 35;
 P = 3;
 radius = 10;
-[best_params, inliers_count bestSample1 bestSample2] = ransac(N, P, radius, frames1, frames2, matches, im1, im2);
+
+[best_params, inliers_count, bestSample1, bestSample2] = ransac(N, P, radius, frames1, frames2, matches, im1, im2);
 
 
 %% Transform second image
 % Mean coordinates of features in each image
 mean1 = round(mean(bestSample1, 2));
 mean2 = round(mean(bestSample2, 2));
+
 
 % Create background for image 2
 temp_image = zeros(size(im2));
@@ -73,7 +75,5 @@ new_image(max(top,1):min(end, max(top,1) + im1sizey - 1), max(left,1):min(end, m
 
 figure('Name', 'Stitched Image')
 imshow(new_image);
-
-
 
 
