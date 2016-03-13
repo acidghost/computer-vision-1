@@ -1,4 +1,4 @@
-function [ best_params, inliers_count ] = ransac( N, P, radius, frames1, frames2, matches, im1, im2 )
+function [ best_params, inliers_count bestSample1 bestSample2] = ransac( N, P, radius, frames1, frames2, matches, im1, im2 )
 %RANSAC Perform RANSAC
 
 [im1sizey, im1sizex] = size(im1);
@@ -14,6 +14,9 @@ matches_y2 = frames2(2, matches(2, :));
 max_inliers_iteration = 1;
 inliers_count = zeros(N, 1);
 
+bestSample1 = zeros(2, P);
+bestSample2 = zeros(2, P);
+
 %% Find best
 figure    % open figure to show matches
 for n = 1:N
@@ -21,8 +24,8 @@ for n = 1:N
 
     % sample P matches (pairs of points)
     sample = get_sample(nmatches, P, matches);
-    sampled1 = frames1(:, sample(1, :));
-    sampled2 = frames2(:, sample(2, :));
+    sampled1 = frames1(1:2, sample(1, :));
+    sampled2 = frames2(1:2, sample(2, :));
 
     % build A matrix
     % TODO: P determines A and b rows?
@@ -65,6 +68,8 @@ for n = 1:N
     if inliers_count(n) >= inliers_count(max_inliers_iteration)
         best_params = params;
         max_inliers_iteration = n;
+        bestSample1 = sampled1;
+        bestSample2 = sampled2; 
         disp('New best!')
     end
 
