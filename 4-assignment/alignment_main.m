@@ -10,7 +10,7 @@ im2 = im2single(imread(impath2));
 [frames1, frames2, matches] = get_matches(im1, im2);
 
 %% Set up and perform RANSAC
-N = 1;
+N = 35;
 P = 3;
 radius = 10;
 [best_params, inliers_count] = ransac(N, P, radius, frames1, frames2, matches, im1, im2);

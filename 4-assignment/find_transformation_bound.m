@@ -3,19 +3,19 @@ function [ xsize, ysize, min_x, min_y ] = find_transformation_bound( imsize, par
 
 % define original image boundaries
 tl = [ 1 1 ];
-bl = [ imsize(2) 1 ];
-br = [ imsize(2) imsize(1) ];
-tr = [ 1 imsize(1) ];
+bl = [ imsize(1) 1 ];
+br = [ imsize(1) imsize(2) ];
+tr = [ 1 imsize(2) ];
 
 if ~exist('invert', 'var')
     invert = 0;
 end
 
 % transform the four corners
-t_tl = transform_point(tl(2), tl(1), params, invert);
-t_bl = transform_point(bl(2), bl(1), params, invert);
-t_br = transform_point(br(2), br(1), params, invert);
-t_tr = transform_point(tr(2), tr(1), params, invert);
+t_tl = transform_point(tl(1), tl(2), params, invert);
+t_bl = transform_point(bl(1), bl(2), params, invert);
+t_br = transform_point(br(1), br(2), params, invert);
+t_tr = transform_point(tr(1), tr(2), params, invert);
 
 % find maxs and mins
 max_y = max([ t_tl(1) t_bl(1) t_br(1) t_tr(1) ]);
