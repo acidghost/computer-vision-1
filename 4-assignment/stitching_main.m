@@ -43,7 +43,7 @@ background = transform_image(temp_image, best_params);
 [~,ind] = max(background(:));
 [mean2_t(2) ,mean2_t(1)] = ind2sub(size(background),ind);
 
-im2_t = transform_image(im2, best_params);
+im2_t = transform_image(im2, best_params, 1);
 [im2_tsizey, im2_tsizex] = size(im2_t);
 figure
 imshow(im2_t);
