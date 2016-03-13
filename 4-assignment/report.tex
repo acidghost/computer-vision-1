@@ -196,4 +196,35 @@ Since the second image was in a space that was not yet comparable to the first i
 \end{figure}
 
 
+
+
+Given a landmark $L_1$ of the left image and the transformed landmark $L_2$ of
+the right image, we compute the coordinates in which the second image should be
+copied in the stitched image using the following formulae (origin is at top left):
+
+\begin{equation}
+	\begin{split}
+		top &= L_{2y} - L_{1y} \\
+		left &= L_{2x} - L_{1x} \\
+		right &= width_{T(im2)} - L_{2x} - width_{im1} - L_{1x} \\
+		bottom &= height_{T(im2)} - L_{2y} - height_{im1} - L_{1y}
+	\end{split}
+	\label{eq:stitch_corners}
+\end{equation}
+
+where $L_x$ and $L_y$ are the $x$ and $y$ coordinates of the landmark and
+$T(im)$ is the transformed image. We proceed by estimating the size of the full
+stitched image by means of the following equations:
+
+\begin{equation}
+	\begin{split}
+		width_{stitch} &= width_{im1} + max(left, 0) + max(right, 0) \\
+		height_{stitch} &= height_{im1} + max(top, 0) + max(bottom, 0)
+	\end{split}
+	\label{eq:estimate_stitch}
+\end{equation}
+
+
+
+
 \end{document}
