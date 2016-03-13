@@ -175,15 +175,25 @@ versa. Our custom function can be found in \texttt{transform\_image.m}.
 
 
 \section{Image Stitching}
-- convert rgb images to greyscale
-- perform ransac tto get best parameters and best keypoints
-- average the keypoints on each image to produce two landmarks
-- transform the landmark from the second image to an equivalent space for image 1
-- tranform the second image to the equivalent space for image 1
+With the previously implemented functions we were able to create a stitching function that takes two images and puts them together in the same canvas to create a panorama. For demo purposes we used the given images \textit{left.jpg} (as image 1) and \textit{right.jpg} (as image 2). Together they picture a bus on the street. 
+ 
+Firstly, since our functions work with gray scale values, we need to transform the input images from RGB to gray scale. Then we called the \textit{get\_matches.m} function to get the shared keypoints, and called \textit{ransac.m} to get the best transformation parameters, and the keypoints that lead to those. The parameters for this were $N = 35, P = 3, and radius = 10$.
+
+Up to this point, the procedure was the same as for image alignment. However, in order to put both images on the same canvas we need to find a shared coordinate system that tells us where the shared points overlap. For this purpose we use the set of keypoints returned by \textbf{RANSAC} on each image and average them to produce what we called \textit{landmarks}.
+
+Since the second image was in a space that was not yet comparable to the first image, we first transformed the landmark to know where, in average, the keypoints will lie. Additionally, we transformed the full image to the equivalent space for image 1. 
+
 - look at the differences between the landmark of image 1 and transformed landmark for image 2. this determines the coordinates for when image 2 should be copied
 -  estimate the total size of the final image
 - copy image 2
 - copy only relevant part from image 1  
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=1\textwidth]{imgs/stitched.jpg}
+	\caption{Images \textit{left.jpg} and \textit{right.jpg} stitched in same panorama}.
+	\label{fig:stitched}
+\end{figure}
 
 
 \end{document}
