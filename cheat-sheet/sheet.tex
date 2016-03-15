@@ -6,6 +6,7 @@
 
 \usepackage{geometry}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{float}
 
@@ -145,6 +146,53 @@ Another reflectance model is the \textbf{Phong} model which uses an
 
 
 \section{Image Processing}
+We can think of an image as a function from $\mathbb{R}^2$ to $\mathbb{R}$.
+
+\subsection{Point Operators}
+Act on a single point, that is locality in the image is lost.
+\paragraph{Contrast and Brightness} also called \textit{gain} and
+\textit{bias} are defined by the following operation:
+\begin{equation}
+g(\mathbf{x}) = a f(\mathbf{x}) + b
+\end{equation}
+where $a$ and $b$ are gain and bias respectively.
+\paragraph{Gamma Correction} is used to remove the non-linear mapping between
+the input radiance and the pixel values (invert gamma mapping):
+\begin{equation}
+g(\mathbf{x}) = [f(\mathbf{x})]^{\frac{1}{\gamma}}
+\end{equation}
+where $\gamma = 2.2$ is a reasonable fit for most cameras.
+\paragraph{Histogram Equalization} is used to transform an image so that the
+resulting histogram is flat. A pro of this is that we can show the entire color
+range, but a flat histogram results in a muddy-looking picture. A solution to
+this is to perform a \textit{partial} histogram equalization, that is blend the
+full histogram equalization and an identity transform.
+
+\subsection{Neighborhood Processing (Filtering)}
+Act on a neighborhood of pixels, that is spatial information is preserved.
+\subsubsection{Linear Filters}
+This class of filters have the property of being linear (the response to the sum
+of two signals is equal to the sum of the responses of the two signals
+separately). It could be formulated as follows:
+\begin{equation}
+g(i, j) = \sum_{k,l} h(k, l) f(i + k, j + l)
+\end{equation}
+and is called a \textit{correlation}. A common variant is the following:
+\begin{equation}
+g(i, j) = \sum_{k,l} h(k, l) f(i - k , j - l)
+\end{equation}
+and is called a \textit{convolution}. Note that a convolution flips the
+resulting image because the sign of the offsets has been reversed.
+
+Linear filters suffer from boundary effects, this is because the original image
+is being padded with zero valued pixels wherever the convolution kernel extends
+beyond the image boundaries. There exist a number of padding techniques:
+\textit{zero} sets all pixels outside the image with zeros, \textit{constant}
+sets all pixels to a specified border color, \textit{clamp} repeats edge pixels
+indefinitely, \textit{cyclic} wraps pixels around the image and \textit{mirror}
+reflected pixel along the edge.
+
+\paragraph{Separable filtering}
 
 
 \end{document}
