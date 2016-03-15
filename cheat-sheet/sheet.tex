@@ -11,7 +11,7 @@
 
 \geometry{a4paper, margin={.3in, .3in}}
 
-\title{Computer Vision 1 \\ Cheat Sheet}
+\title{Computer Vision 1 - Cheat Sheet}
 \author{Andrea Jemmett}
 
 \begin{document}
@@ -51,20 +51,16 @@ and $\bar{z}(\lambda)$.
 
 The observer perceives color in terms of three color signals based on the
 trichromacy theory and can be modeled as:
-
 \begin{equation} \label{eq:color-perception}
 C = \int_{\lambda} E(\lambda) S(\lambda) f_C(\lambda) d\lambda
 \end{equation}
-
 where $C \in \{R, G, B\}$, $E$ is the SPD, $S$ is the light reflected by objects
 and $f_C$ is the color matching function. If we use $\bar{x}$, $\bar{y}$ and
 $\bar{z}$ then we have the XYZ color space. To better represent graphically this
 color space we can compute the $xyz$ values as follows:
-
 \begin{equation}
 x = \frac{X}{X + Y + Z} \quad y = \frac{Y}{X + Y + Z} \quad z = \frac{Z}{X + Y + Z}
 \end{equation}
-
 where we factor out the intensity. Since the chromaticity values sum to unity,
 two elements are sufficient to represent a color. When the $x$ and $y$ values
 are represented on a plane the chromaticity diagram is obtained. We can also
@@ -78,33 +74,24 @@ the saturation is given by $\frac{||G_1||}{||G_2||}$.
 RGB values can be obtained using equation \ref{eq:color-perception} and the
 $\bar{r}$, $\bar{g}$, and $\bar{b}$ color matching functions. The projection of
 RGB points on the rgb chromaticity triangle is defined by:
-
 \begin{equation}
 r = \frac{R}{R + G + B} \quad g = \frac{G}{R + G + B} \quad b = \frac{B}{R + G + B}
 \end{equation}
-
 In the HSI chromaticity diagram, we compute hue and saturation in the following
 way: by assuming white light we define a reference point of $r = g = b = 1/3$,
 the saturation can than be computed as:
-
 \begin{equation}
 S_{rgb}(r, g, b) = \sqrt{(r - 1/3)^2 + (g - 1/3)^2 + (b - 1/3)^2}
 \end{equation}
-
 or
-
 \begin{equation}
 S(R, G, B) = 1 - \frac{min(R, G, B)}{R + G + B}
 \end{equation}
-
 while the hue is given by:
-
 \begin{equation}
 H_{rgb}(r, g, b) = arctan(\frac{r - 1/3}{g - 1/3})
 \end{equation}
-
 or
-
 \begin{equation}
 H(R, G, B) = arctan(\frac{\sqrt{3}(G - B)}{(R - G) + (R - B)})
 \end{equation}
@@ -117,7 +104,44 @@ intensity (similarly are S and H). For shiny surfaces H is color invariant.
 
 
 \section{Surface Reflection}
+The Bidirectional Reflectance Distribution Function (BRDF) is the most general
+model of light scattering. Describes how much light arriving at an incident
+direction $\mathbf{v_i}$ is emitted in a reflected direction $\mathbf{v_r}$. It
+can be written as a function of the angles of incident and reflected light like so:
+\begin{equation}
+f_{BRDF}(\theta_i, \phi_i, \theta_r, \phi_r) =
+	\frac{radiance\_of(\theta_r, \phi_r)}{irradiance\_at(\theta_i, \phi_i)}
+\end{equation}
+Typically BRDF can be split into \textit{diffuse} and \textit{specular}
+components. The \textbf{diffuse} component (\textit{Lambertian} or \textit{matte}
+reflection) scatters light uniformly in all directions and is associated with
+the phenomena of \textit{shading}. Light is scattered uniformly across all
+directions (the BRDF is constant):
+\begin{equation}
+f_d(\theta_i, \phi_i, \theta_r, \phi_r) = \frac{\rho_d}{\pi}
+\end{equation}
+but the amount of light depends on the angle between the incident direction and
+the surface normal $\theta_i$ (is independent of the viewing direction
+$\mathbf{v}$):
+\begin{equation}
+radiance\_of = \frac{\rho_d}{\pi} I cos(\theta_i)
+\end{equation}
+where $\rho_d$ is the surface albedo and $I$ is the source intensity.
+This is because the surface area exposed to a given amount of light becomes
+larger at oblique angles. The \textbf{specular} (glossy or highlight) BRDF reflection
+depends strongly on the outgoing light direction. All the incident light energy
+is reflected in a \textit{single} direction (only when $v_i = v_r$). So the
+mirror BRDF is a delta function:
+\begin{equation}
+f_d(\theta_i, \phi_i, \theta_v, \phi_v) = \rho \delta(\theta_i - \theta_v)
+\delta(\phi_i + \pi - \phi_v)
+\end{equation}
+\begin{equation}
+radiance\_of = I f_d(\theta_i, \phi_i, \theta_v, \phi_v)
+\end{equation}
 
+Another reflectance model is the \textbf{Phong} model which uses an
+\textit{ambient illumination} component besides diffuse and specular.
 
 
 \section{Image Processing}
