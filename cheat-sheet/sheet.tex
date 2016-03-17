@@ -1,6 +1,5 @@
 %        File: sheet.tex
 %     Created: Mon Mar 14 04:00 PM 2016 C
-% Last Change: Mon Mar 14 04:00 PM 2016 C
 %
 \documentclass[a4paper,twocolumn]{article}
 
@@ -181,8 +180,9 @@ and is called a \textit{correlation}. A common variant is the following:
 \begin{equation}
 g(i, j) = \sum_{k,l} h(k, l) f(i - k , j - l)
 \end{equation}
-and is called a \textit{convolution}. Note that a convolution flips the
-resulting image because the sign of the offsets has been reversed.
+and is called a \textit{convolution}. Note that a filter correlated with an
+image returns the filpped image, whereas the result of a convolution has the
+same orientation because the sign of the offsets have been reversed.
 
 Linear filters suffer from boundary effects, this is because the original image
 is being padded with zero valued pixels wherever the convolution kernel extends
@@ -193,6 +193,55 @@ indefinitely, \textit{cyclic} wraps pixels around the image and \textit{mirror}
 reflected pixel along the edge.
 
 \paragraph{Separable filtering}
+The cost of performing a convolution is of $K^2$ operations per pixel. This
+operation can be sped up by performing first a 1D horizontal and then vertical
+convolution. This results in $2K$ operations per pixel. A kernel for which this
+is possible is said to be \textit{separable}. So a 2D kernel $\mathbf{K}$ is
+equal to the outer product of two 1D filters
+$\mathbf{K}=\mathbf{v}\mathbf{h}^T$ in vertical and horizontal directions.
+Determining if a kernel is separable is often done by inspection, using the
+analytical form or using SVD.
+
+\paragraph{Common linear filters}
+\begin{description}
+	\item[Box or moving average] simply takes the average in a $K^2$ window so has
+					a smoothing effect; it's equal to convolving with a kernel of all ones
+					and then scaling; for example:
+					$$\frac{1}{9} \quad \begin{bmatrix}
+								1 & 1 & 1 \\
+								1 & 1 & 1 \\
+								1 & 1 & 1
+				\end{bmatrix}$$
+	\item[Sharpening] accentuate difference with local average:
+					$$\begin{bmatrix}
+								0 & 0 & 0 \\
+								0 & 2 & 0 \\
+								0 & 0 & 0
+					\end{bmatrix}
+					\quad - \quad \frac{1}{9} \quad \begin{bmatrix}
+								1 & 1 & 1 \\
+								1 & 1 & 1 \\
+								1 & 1 & 1
+				\end{bmatrix}$$
+	\item[Sobel] used to find edges in one direction:
+					$$\begin{bmatrix}
+								-1 & -2 & -1 \\
+								 0 &  0 &  0 \\
+								 1 &  2 &  1
+					\end{bmatrix}$$
+					finds horizontal edges;
+	\item[Gaussian] weights contribution of pixels by their nearness, so has a
+					smoothing effect;
+					$$G_{\sigma} = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}$$
+					the parameter $\sigma$ is a smoothing parameter, larger $\sigma$
+					corresponds to a blurrier image;
+					removes high-frequency components and so acts as a low-pass filter;
+					it is a \textit{separable} kernel; used to denoise Gaussian additive
+					noise (not salt and pepper);
+	\item[Laplacian of Gaussian] is a \textit{steerable} filter defined as:
+					$$\nabla^2 G = \frac{\partial G}{\partial x} + \frac{\partial
+					G}{\partial y} = \left(\frac{x^2 + y^2}{\sigma^4} - \frac{2}{\sigma^2}\right) G$$
+\end{description}
 
 
 \end{document}
