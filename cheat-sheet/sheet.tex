@@ -124,7 +124,7 @@ but the amount of light depends on the angle between the incident direction and
 the surface normal $\theta_i$ (is independent of the viewing direction
 $\mathbf{v}$):
 \begin{equation}
-radiance\_of = \frac{\rho_d}{\pi} I cos(\theta_i)
+radiance\_of_d = \frac{\rho_d}{\pi} I cos(\theta_i)
 \end{equation}
 where $\rho_d$ is the surface albedo and $I$ is the source intensity.
 This is because the surface area exposed to a given amount of light becomes
@@ -133,11 +133,11 @@ depends strongly on the outgoing light direction. All the incident light energy
 is reflected in a \textit{single} direction (only when $v_i = v_r$). So the
 mirror BRDF is a delta function:
 \begin{equation}
-f_d(\theta_i, \phi_i, \theta_v, \phi_v) = \rho \delta(\theta_i - \theta_v)
+f_s(\theta_i, \phi_i, \theta_v, \phi_v) = \rho \delta(\theta_i - \theta_v)
 \delta(\phi_i + \pi - \phi_v)
 \end{equation}
 \begin{equation}
-radiance\_of = I f_d(\theta_i, \phi_i, \theta_v, \phi_v)
+radiance\_of_s = I f_d(\theta_i, \phi_i, \theta_v, \phi_v)
 \end{equation}
 
 Another reflectance model is the \textbf{Phong} model which uses an
@@ -181,7 +181,7 @@ and is called a \textit{correlation}. A common variant is the following:
 g(i, j) = \sum_{k,l} h(k, l) f(i - k , j - l)
 \end{equation}
 and is called a \textit{convolution}. Note that a filter correlated with an
-image returns the filpped image, whereas the result of a convolution has the
+image returns the flipped image, whereas the result of a convolution has the
 same orientation because the sign of the offsets have been reversed.
 
 Linear filters suffer from boundary effects, this is because the original image
@@ -249,7 +249,7 @@ combination of pixels instead of a weighted average, as in linear filters. For
 example in case of shot noise a Gaussian filter would result in the noisy pixels
 being softened instead of removed.
 \paragraph{Median filter} uses the median value from the pixel's neighborhood;
-it's effective agains shot noise because noisy pixel value usually lie away from
+it's effective against shot noise because noisy pixel value usually lie away from
 the true value in the neighborhood;
 \paragraph{Bilateral filtering} the output pixel value depends on a weighted
 combination of neighbour pixel values; weights are determined using both spatial
