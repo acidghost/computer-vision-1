@@ -256,6 +256,25 @@ combination of neighbour pixel values; weights are determined using both spatial
 distance and intensity difference.
 
 
+\section{Feature Extraction}
+There are two kind of features. The first are \textbf{keypoint features} (interest points,
+corners) and are single points on the image and are
+characterized by their neighborhood using a \textit{descriptor}; these interest
+points can then be matched in two different images to successively align them
+for example. The feature matching pipeline is as follows:
+\begin{enumerate}
+  \item find a set of distinctive keypoints;
+  \item define a region around each point;
+  \item extract and normalize the region content;
+  \item compute a local descriptor for each region;
+  \item match local descriptors.
+\end{enumerate}
+It is important for keypoint features to be \textit{repeatable} and
+\textit{distinctive}; also they need to be \textit{invariant} to translation,
+rotation, scaling and other imaging parameters.
+The second kind of features are \textbf{edges} that are used to get
+orientation and local appearence of an object.
+
 
 
 \end{document}
