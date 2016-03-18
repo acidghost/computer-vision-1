@@ -293,6 +293,21 @@ image derivative. This is often called a \textit{Derivative of Gaussian} filter.
 The $\sigma$ in this case determines the scale at which the filter is going to
 find edges, but may also blur the edges too much.
 
+\subsubsection{Canny Edge Detector}
+The Canny operator transforms an input image into a binary edge map of thin
+(having width of one pixel) edge segments. The first step is to compute the
+\textit{image gradient} in the $x$ and $y$ directions. We can use the Sobel
+operator, that provides an approximation of the partial derivatives, or the DoG.
+Then from the image gradients $I_x$ and $I_y$ we can compute the
+\textit{orientation} as $\theta = atan2(I_x, I_y)$ and round it to multiplies of
+$\pi/4$. A step of \textit{non-maxima suppression} is employed to test whether a
+gradient value $g(p)$ is maximal in the direction given by $\theta(p)$.
+The final step is edge linking (or \textit{hysteresis}). By using two thresholds
+$T_{low}$ and $T_{high}$ we link edgels found where $g(p) \ge T_{high}$ with
+edgels $q$ found in its neighborhood where $g(q) \ge T_{low}$. Another parameter
+that controls the results of the operator is the $\sigma$ in case of DoG; small
+$\sigma$ means fine features, large $\sigma$ detects large scale edges.
+
 
 \end{document}
 
