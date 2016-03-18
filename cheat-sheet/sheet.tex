@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{appendix}
 
 \geometry{a4paper, margin={.3in, .3in}}
 
@@ -203,45 +204,52 @@ Determining if a kernel is separable is often done by inspection, using the
 analytical form or using SVD.
 
 \subsubsection{Common linear filters}
-\begin{description}
-	\item[Box or moving average] simply takes the average in a $K^2$ window so has
-					a smoothing effect; it's equal to convolving with a kernel of all ones
-					and then scaling; for example:
-					$$\frac{1}{9} \quad \begin{bmatrix}
-								1 & 1 & 1 \\
-								1 & 1 & 1 \\
-								1 & 1 & 1
-				\end{bmatrix}$$
-	\item[Sharpening] accentuate difference with local average:
-					$$\begin{bmatrix}
-								0 & 0 & 0 \\
-								0 & 2 & 0 \\
-								0 & 0 & 0
-					\end{bmatrix}
-					\quad - \quad \frac{1}{9} \quad \begin{bmatrix}
-								1 & 1 & 1 \\
-								1 & 1 & 1 \\
-								1 & 1 & 1
-				\end{bmatrix}$$
-	\item[Sobel] used to find edges in one direction:
-					$$\begin{bmatrix}
-								-1 & -2 & -1 \\
-								 0 &  0 &  0 \\
-								 1 &  2 &  1
-					\end{bmatrix}$$
-					finds horizontal edges;
-	\item[Gaussian] weights contribution of pixels by their nearness, so has a
-					smoothing effect;
-					$$G_{\sigma} = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}$$
-					the parameter $\sigma$ is a smoothing parameter, larger $\sigma$
-					corresponds to a blurrier image;
-					removes high-frequency components and so acts as a low-pass filter;
-					it is a \textit{separable} kernel; used to denoise Gaussian additive
-					noise (not salt and pepper);
-	\item[Laplacian of Gaussian] is a \textit{steerable} filter defined as:
-					$$\nabla^2 G = \frac{\partial G}{\partial x} + \frac{\partial
-					G}{\partial y} = \left(\frac{x^2 + y^2}{\sigma^4} - \frac{2}{\sigma^2}\right) G$$
-\end{description}
+\paragraph{Box or moving average} simply takes the average in a $K^2$ window so has
+	a smoothing effect; it's equal to convolving with a kernel of all ones
+	and then scaling; for example:
+	\begin{equation}
+		\frac{1}{9} \quad \begin{bmatrix}
+			1 & 1 & 1 \\
+			1 & 1 & 1 \\
+			1 & 1 & 1
+		\end{bmatrix}
+	\end{equation}
+\paragraph{Sharpening} accentuate difference with local average:
+	\begin{equation}
+		\begin{bmatrix}
+			0 & 0 & 0 \\
+			0 & 2 & 0 \\
+			0 & 0 & 0
+		\end{bmatrix}
+		\quad - \quad \frac{1}{9} \quad \begin{bmatrix}
+			1 & 1 & 1 \\
+			1 & 1 & 1 \\
+			1 & 1 & 1
+		\end{bmatrix}
+	\end{equation}
+\paragraph{Sobel} used to find edges in one direction:
+	\begin{equation}
+		\begin{bmatrix}
+			-1 & -2 & -1 \\
+			 0 &  0 &  0 \\
+			 1 &  2 &  1
+		\end{bmatrix}
+	\end{equation}
+	finds horizontal edges;
+\paragraph{Gaussian} weights contribution of pixels by their nearness, so has a
+	smoothing effect;
+	\begin{equation}
+		G_{\sigma} = \frac{1}{2\pi\sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}
+	\end{equation}
+	the parameter $\sigma$ is a smoothing parameter, larger $\sigma$ corresponds
+	to a blurrier image; removes high-frequency components and so acts as a
+	low-pass filter; it is a \textit{separable} kernel; used to denoise Gaussian
+	additive noise (not salt and pepper);
+\paragraph{Laplacian of Gaussian} is a \textit{steerable} filter defined as:
+	\begin{equation} \label{eq:log}
+		\nabla^2 G = \frac{\partial G}{\partial x} + \frac{\partial G}{\partial y}
+		= \left(\frac{x^2 + y^2}{\sigma^4} - \frac{2}{\sigma^2}\right) G
+	\end{equation}
 
 \subsubsection{Non-linear Filters}
 In many case better performance can be achieved using a \textit{non-linear}
@@ -286,7 +294,9 @@ the derivation directly on the image we will obtain a noisier image back. To
 cope with this we need to smooth the image first by applying a Gaussian filter.
 Because both convolution and differentiation are linear operators they commute
 so that we can write
-$$\mathbf{J_{\sigma}} = \nabla (G_{\sigma} * I) = \nabla (G_{\sigma}) * I = G_{\sigma} * \nabla(I)$$
+\begin{equation}
+	\mathbf{J_{\sigma}} = \nabla (G_{\sigma} * I) = \nabla (G_{\sigma}) * I = G_{\sigma} * \nabla(I)
+\end{equation}
 and this simplifies the edge detection operator because we could reuse a
 derivative of Gaussian for multiple images without ever computing the actual
 image derivative. This is often called a \textit{Derivative of Gaussian} filter.
@@ -307,6 +317,168 @@ $T_{low}$ and $T_{high}$ we link edgels found where $g(p) \ge T_{high}$ with
 edgels $q$ found in its neighborhood where $g(q) \ge T_{low}$. Another parameter
 that controls the results of the operator is the $\sigma$ in case of DoG; small
 $\sigma$ means fine features, large $\sigma$ detects large scale edges.
+
+\subsection{Blob Detectors}
+Blob detection methods aim at detecting regions in an image that differ in
+properties (brightness, color) comparing to surrounding regions; all points in a
+blob can be considered in some sense similar to each other.
+
+\subsubsection{Laplacian of Gaussian}
+The LoG is defined by the Laplacian operator applied to a Gaussian kernel
+(\ref{eq:log}) and is a circularly symmetric kernel suitable for blob detection.
+With this operator edges are identified by its zero-crossings.
+\begin{figure}[htpb]
+				\centering
+				\includegraphics[height=1.5in]{imgs/gauss-profile.png}
+\end{figure}
+It is possible to build a \textit{pyramid} of Laplacians in the \textit{scale
+space} by applying the LoG operator repeatedly with different scales (controlled
+by $\sigma$) so to obtain different layers of Laplacian responses that may be
+used to identify blobs at different scales. We define the \textit{characteristic
+scale} as the scale that produces the highest peak of Laplacian response.
+
+\subsection{Color Edge Detection and Classification}
+While most edge detectors have been developed for grayscale images, color images
+can provide useful information. For example edges between iso-illuminants
+(colors that have the same illuminance) fail to be detected by grayscale edge
+operators. A simple approach is to combine outputs of grayscale detectors
+applied to each color band separately. A better approach is to compute the
+\textit{oriented energy} in each channel (by using a steerable filter like DoG
+or LoG), compute the gradient by summing gradient magnitudes separately:
+\begin{equation}
+	|\nabla C(x, y)| = \sqrt{R_x^2 + R_y^2} + \sqrt{G_x^2 + G_y^2} + \sqrt{B_x^2 + B_y^2}
+\end{equation}
+or using the Euclidean metric:
+\begin{equation}
+	|\nabla C(x,y)| = \sqrt{R_x^2 + R_y^2 + G_x^2 + G_y^2 + B_x^2 + B_y^2}
+\end{equation}
+or using eigenvalues.
+
+We can use different gradients with different color spaces
+to \textbf{classify} edges as being \textit{color edges}, \textit{shadows} or
+\textit{highlights}. We need first to compute the color gradient in two color
+spaces, one invariant to matte surfaces and one to shiny surfaces, such as
+\textit{rgb} and \textit{Hue}, and define two thresholds $t_{rgb}$ and $t_H$.
+Then if $|\nabla C_{rgb}| \ge t_{rgb} \wedge |\nabla C_H| < t_H$ we classify as
+highlight edge, else if $|\nabla C_H| \ge t_H$ classify as color edge else
+classify as shadow edge. An application of this technique is \textit{shadow removal}.
+First we classify shadow edges in each color band, then the image is separated
+into invariant and shadow image and the latter is subtracted (in log space) from
+the original image.
+
+\subsection{Harris Corner Detector}
+We can distinguish different kind of structures for features, based on their
+dimensionality; at 0D we have single points that are not useful for matching; at
+1D we found edges that can be localized in 1D, that is we can move along the
+edge; at 2D we can localize \textit{corners}, that is we can identify a feature
+by moving along two directions, finding a corner. This issue is commonly called
+\textit{aperture problem}. These ideas can be formalized using the simplest
+possible matching criterion between two image patches, the sum of square
+differences (SSD):
+\begin{equation} \label{eq:ssd}
+	E_{SSD}(u,v) = \sum_i w(x_i,y_i) [I_1(x+u,y+v) - I_0(x,y)]^2
+\end{equation}
+where $I_0$ and $I_1$ are two images being compared, $w$ is a window,
+$\mathbf{u} = [u, v]$ and the summation is over all pixels in the patch (note
+that this is the same formulation for Optical Flow estimation).
+
+Because we don't know which other image locations the feature will end up being
+matched against, we can only compute the so called \textit{auto-correlation}
+comparing an image patch with itself with respect to small variations $\Delta\mathbf{u}$:
+\begin{equation}
+	E_{AC}(\Delta u, \Delta v) = \sum_i w(x_i,y_i) [I(x+\Delta u, y+\Delta v) - I(x,y)]^2
+\end{equation}
+Using a Taylor Series expansion of the image function $I(\mathbf{x_i}+\Delta
+\mathbf{u} \equiv I(\mathbf{x_i}) \nabla I(\mathbf{x_i})\Delta \mathbf{u}$ we
+can approximate the auto-correlation surface as:
+\begin{equation}
+	E_{AC}(\Delta \mathbf{u})=\Delta \mathbf{u}^T \mathbf{A} \Delta \mathbf{u}
+\end{equation}
+where
+\begin{equation}
+	\mathbf{A} = w * \begin{bmatrix}
+		I_x^2 & I_x I_y \\
+		I_x I_y & I_y^2
+	\end{bmatrix}
+\end{equation}
+and $I_x$ and $I_y$ represents gradients in $x$ and $y$ directions. If we
+consider a single pixel $\mathbf{p}$, we can define
+\begin{equation}
+	\mathbf{G_p} = \begin{bmatrix}
+		I_x^2(\mathbf{p}) & I_x(\mathbf{p}) I_y(\mathbf{p}) \\
+		I_x(\mathbf{p}) I_y(\mathbf{p}) & I_y^2(\mathbf{p})
+	\end{bmatrix}
+\end{equation}
+This pixel is a corner feature if the eigenvalues $\lambda_1$ and $\lambda_2$
+are both large and of similar magnitude. We can define the \textit{cornerness
+measure} as
+\begin{equation}
+	H(\mathbf{p}) = det(\mathbf{G_p}) - \alpha Tr(\mathbf{G_p})
+\end{equation}
+with $0.04 \le \alpha \le 0.06$. Due to the properties of eigenvalues we can
+write
+\begin{equation}
+	H(\mathbf{p}) = \lambda_1 \lambda_2 - \alpha (\lambda_1 + \lambda_2)
+\end{equation}
+The response function $H$ depends on the eigenvalues of $A$ so that if it is
+large there is a corner, is negative with large magnitude for an edge and
+$|H|$ is small for a flat region.
+
+\paragraph{Harris Corner Detector algorithm}
+\begin{enumerate}
+	\item Compute $x$ and $y$ derivatives of image
+		$$I_x=G_{\sigma}^x * I \qquad I_y = G_{\sigma}^y * I$$
+	\item Compute product of derivatives pixel-wise to build matrix $\mathbf{A}$
+	\item Convolve each of these images with a larger Gaussian
+	\item Build a matrix $\mathbf{G}$ for each pixel
+	\item Compute the cornerness measure $H$ for each pixel
+	\item Threshold on values of $H$ and compute non-maxima suppression
+\end{enumerate}
+
+
+\subsection{Template Matching}
+The goal is to find an image template inside a bigger image (scene). There are
+two methods. The first one consists in using a SSD (eq. \ref{eq:ssd}) that signals how much the
+template differ from the examined window around a pixel. Because of this we need
+to take a $1 - \sqrt{SSD}$ to than identify the maxima as true detections.
+A second approach consists in using the normalized cross-correlation as
+\begin{equation}
+	h[m,n]=\frac{\sum_{k,l}(g[k,l]-\bar{g})(f[m-k,n-l]-\bar{f}_{m,n})}
+		{\sqrt{\sum_{k,l}(g[k,l]\bar{g})^2\sum_{k,l}(f[m-k,n-l]-\bar{f}_{m,n})^2}}
+\end{equation}
+where $\bar{g}$ is the mean template and $\bar{f}_{m,n}$ is the mean image patch.
+The normalized cross-correlation responds positively for similar patches, so we
+can apply a thresholding operation directly on it to find the template.
+
+SSD is usually faster but is sensitive to the overall intensities. Normalized
+cross-correlation methods instead are slower but invariant to local average
+intensity and contrast.
+
+
+
+\newpage
+
+\begin{appendices}
+	\section{Linear Algebra}
+	\paragraph{Trace} of a $n \times n$ matrix $\mathbf{A} = (a_{ij})$:
+	\begin{equation}
+		Tr(\mathbf{A}) = \sum_{i=1}^n a_{ii}
+	\end{equation}
+	\paragraph{Determinant} of a $2 \times 2$ matrix $\mathbf{A} = (a_{ij})$ is:
+	\begin{equation}
+		det(\mathbf{A}) = a_{11} a_{22} - a_{12} a_{21}
+	\end{equation}
+	for a $3 \times 3$ matrix is:
+	\begin{multline*}
+		det(\mathbf{A}) = a_{11} a_{22} a_{33} + a_{12} a_{23} a_{31} +
+		a_{13} a_{21} a_{32} + \\ - a_{13} a_{22} a_{31} - a_{12} a_{21}
+		a_{33} - a_{11} a_{23} a_{32}
+	\end{multline*}
+	\paragraph{Eigenvalues} of an $n \times n$ matrix $\mathbf{A}$ are the $n$
+	solutions to the \textit{characteristic equation} $det(\mathbf{A} - \lambda
+	\mathbf{I}) = 0$. The determinant of a square matrix is equal to the product
+	of its eigenvalues, and the trace is equal to the sum of the eigenvalues.
+\end{appendices}
 
 
 \end{document}
