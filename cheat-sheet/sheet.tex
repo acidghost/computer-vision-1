@@ -275,6 +275,23 @@ rotation, scaling and other imaging parameters.
 The second kind of features are \textbf{edges} that are used to get
 orientation and local appearence of an object.
 
+\subsection{Edge Detectors}
+Edges are caused by a variety of factors, mostly discontinuities. For example
+surface normal (change in shape), depth (objects at different perspective
+levels), surface color (some lettering on a label) or illumination (shadows).
+Analytically an edge is a rapid change in the image function. To find these
+rapid changes we can apply a derivative to a signal so that the extrema of the
+resulting signal are the rapid changes of the original input signal. If we apply
+the derivation directly on the image we will obtain a noisier image back. To
+cope with this we need to smooth the image first by applying a Gaussian filter.
+Because both convolution and differentiation are linear operators they commute
+so that we can write
+$$\mathbf{J_{\sigma}} = \nabla (G_{\sigma} * I) = \nabla (G_{\sigma}) * I = G_{\sigma} * \nabla(I)$$
+and this simplifies the edge detection operator because we could reuse a
+derivative of Gaussian for multiple images without ever computing the actual
+image derivative. This is often called a \textit{Derivative of Gaussian} filter.
+The $\sigma$ in this case determines the scale at which the filter is going to
+find edges, but may also blur the edges too much.
 
 
 \end{document}
