@@ -587,6 +587,90 @@ which acts as a similarity function and for a discrete density function
 
 
 
+\section{Segmentation}
+The goal of image segmentation is to break up the image into meaningful or
+perceptually similar regions. In statistics this problem is also known as
+\textit{cluster analysis}. Early techniques tend to use region splitting or
+merging, while more recent algorithms often optimize some global criterion like
+intra-region consistency and inter-region boundary lengths. In clustering
+methods there are two approaches: \textit{top-down} in which we divide regions
+that likely belong together and \textit{bottom-up} in which we group regions
+with similar features. When segmenting an image the result can be an
+over-segmented (where the segmentation is too fine, resulting in segmenting
+objects) or under-segmented (where the segmentation in too coarse, resulting in
+missing to cluster objects correctly).
+
+\subsection{K-means}
+In K-means we iteratively reassign points to the nearest cluster center. The
+algorithm is as follows:
+\begin{enumerate}
+	\item Initialize $K$ cluster centers at random
+	\item Assign each point to the closest cluster center using a distance measure
+	\item Update the cluster centers using the mean of points in that cluster
+	\item Repeat steps 2-3 until not points are reassigned
+\end{enumerate}
+So the only design choices to be made are on the number of clusters $K$ and the
+distance metric to use (traditionally Euclidean). It is guaranteed that it will
+converge to a local minimum.
+
+As features we could use different ones such as intensities, different color
+models or something called a \textit{filter bank}. When using filter banks we
+use a set of filters so that when we apply those $n$ filters we get back $n$
+features that later we can use for segmentation. Another filter that we can use
+to extract useful features for clustering is a \textit{Gabor filter}. This two
+approaches are particularly useful for textured images.
+
+\subsection{Split-and-Merge}
+To split an image into regions a simple technique consists in computing the
+image histogram and then find a threshold that that best separates the large
+peaks in the histogram.
+
+Merging techniques combine adjacent regions whose average color difference is
+below a threshold or whose regions are too small. Other approaches use distance
+measure to aggregate data points or regions.
+
+\subsection{Mean Shift Segmentation}
+We have already seen the Mean Shift algorithm for tracking. For segmentation the
+intuition is the same, the features in this case are not templates or keypoints,
+but we want to cluster all image pixels by estimating the feature space PDF and
+assigning pixels that lead to nearby modes to the same cluster.
+
+The algorithm works as follows:
+\begin{enumerate}
+	\item Choose a kernel function $K$ and a bandwidth $h$
+	\item For each pixel:
+		\begin{enumerate}
+			\item Center a window at that pixel
+			\item Compute the mean of the data in the search window
+			\item Center the search window at the new mean location
+			\item Repeat b-c until convergence
+		\end{enumerate}
+	\item Assign pixels that lead to nearby modes to the same cluster
+\end{enumerate}
+It produces good general-practice segmentation, is flexible in number and shape
+of regions and is robust to outliers (K-means is not). As a con it is not
+suitable for high-dimensional feature spaces.
+
+\subsection{Normalized Cuts}
+The normalized cuts technique tries to find \textit{affinities} between near
+pixels and tries to separate groups that are connected by weak affinities.
+Lets consider a \textit{graph} representation of an image where nodes are pixels
+and each node is connected with any other pixel. Each link has a weight
+$w_{pq}$ that represents the similarity of the connected nodes. The cut
+between two groups $A$ and $B$ is
+\begin{equation}
+	cut(A,B) = \sum_{i \in A, j \in B} w_{ij}
+\end{equation}
+We then define the \textit{normalized cut} as a segmentation metric
+\begin{equation}
+	Ncut(A,B)=\frac{cut(A,B)}{assoc(A,V)}+\frac{cut(A,B)}{assoc(B,V)}
+\end{equation}
+where $assoc(A,A)=\sum_{i\in A,j\in A}w_{ij}$ is the association (sum of all
+weights) within a cluster and $assoc(A,V)=assoc(A,A)+assoc(A,B)$ is the sum of
+all weights associated with nodes in $A$. We could also consider
+$assoc(A,V)=volume(A)$ where it intends the sum of costs of all edges that touch $A$.
+
+
 
 
 \newpage
