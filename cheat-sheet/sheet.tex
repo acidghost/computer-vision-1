@@ -456,6 +456,77 @@ intensity and contrast.
 
 
 \section{Tracking}
+The goal of tracking techniques is to find the same set of features in a
+sequence of two or more images. Unlike feature matching, where we search for
+pairs of matches in two or more images, in tracking we identify a set of
+features in the first frame and we \textit{track} their movement across the
+sequence. There are two main classes of tracking algorithms: in one we
+\textit{search} for features (or templates) in a \textit{detects and track}
+fashion, in the other learning methods are used to \textit{classify} patches and
+train specific recognizers.
+
+\subsection{Optical Flow}
+The goal is to find for each pixel a velocity vector that says in which
+direction it is moving and how quickly it is moving across the image.
+This is the most general (and challenging) method for motion estimation.
+The first step is to apply a Taylor expansion of the two images
+\begin{multline} \label{eq:optic-flow-taylor}
+	I(x+\delta x, y+\delta y, t+\delta t) = \\
+		I(x,y,t)+\delta x\cdot\frac{\partial I}{\partial x}(x,y,t)+\delta
+		y\cdot\frac{\partial I}{\partial y}(x,y,t)+\delta t\cdot\frac{\partial
+		I}{\partial t}(x,y,t)
+\end{multline}
+as the value $\delta t$ we take the time difference between two subsequent
+frames. With $\delta x$ and $\delta y$ we model the \textit{small} motion of one
+pixel at time $t$ into another location at time $t+1$. Then we use the
+\textit{brightness constancy assumption}
+\begin{equation}
+	I(x+\delta x,y+\delta y, t+\delta t)=I(x,y,t)
+\end{equation}
+to obtain that the right-hand side of equation \ref{eq:optic-flow-taylor} is
+equal to zero. We than divide by $\delta t$ to obtain
+\begin{equation}
+	uI_x + vI_y + I_t = 0
+	\label{eq:optic-flow-eq}
+\end{equation}
+where $u = u(x,y,t) = \delta x / \delta t$, $v = v(x,y,t) = \delta y / \delta t$,
+$I_x = (\partial I / \partial x)(x,y,t)$, and similarly for $I_y$ and $I_t$.
+Equation \ref{eq:optic-flow-eq} is known as the \textit{optic flow equation}.
+
+Unfortunately this is a system of one equation in two unknowns. Lukas and Kanade
+proposed a second constraint (the \textit{spatial motion constraint}) which
+assumes motion constancy within pixel neighborhoods at time $t$ which means that
+adjacent pixels in $I(x,y,t)$ have the same velocity vectors. To cope with noisy
+data it is better to use a neighborhood of size $k > 2$ pixels thus having an
+overdetermined system. It should also not be too large because we assume that
+all pixels in the neighborhood have the same motion vector. This leads to the
+following equation system
+\begin{equation}
+	\begin{bmatrix}
+		I_{x1} & I_{y1} \\
+		I_{x2} & I_{y2} \\
+		\vdots & \vdots \\
+		I_{xk} & I{yk}
+	\end{bmatrix}
+	\begin{bmatrix}
+		u \\ v
+	\end{bmatrix}
+	= -\begin{bmatrix}
+		I_{t1} \\ I_{t2} \\ \vdots \\ I_{tk}
+	\end{bmatrix}
+	\label{eq:optic-flow-lk}
+\end{equation}
+which can be written as
+\begin{equation}
+	\mathbf{A}\mathbf{u}=-\mathbf{b}
+\end{equation}
+This system can be solved in the least-square error sense yielding an optimal
+solution for $\mathbf{u}=(u,v)$
+\begin{equation}
+	\mathbf{u}=(\mathbf{A^TA})^{-1}\mathbf{A^Tb}
+\end{equation}
+It can be solved given that $\mathbf{A^TA}$ is invertible, its two eigenvalues
+should not be small (like for Harris corners) and should be well-conditioned.
 
 
 
