@@ -441,7 +441,7 @@ two methods. The first one consists in using a SSD (eq. \ref{eq:ssd}) that signa
 template differ from the examined window around a pixel. Because of this we need
 to take a $1 - \sqrt{SSD}$ to than identify the maxima as true detections.
 A second approach consists in using the normalized cross-correlation as
-\begin{equation}
+\begin{equation} \label{eq:xcorr}
 	h[m,n]=\frac{\sum_{k,l}(g[k,l]-\bar{g})(f[m-k,n-l]-\bar{f}_{m,n})}
 		{\sqrt{\sum_{k,l}(g[k,l]\bar{g})^2\sum_{k,l}(f[m-k,n-l]-\bar{f}_{m,n})^2}}
 \end{equation}
@@ -527,6 +527,64 @@ solution for $\mathbf{u}=(u,v)$
 \end{equation}
 It can be solved given that $\mathbf{A^TA}$ is invertible, its two eigenvalues
 should not be small (like for Harris corners) and should be well-conditioned.
+
+\subsection{Template Tracking}
+Tracking consists in searching for a target object, represented by a
+\textit{template}, in a bigger image. The most simple form of template tracking
+is modeled for translational displacement searching for the same template but
+translated, meanwhile the majority of the tracking applications require more
+sophisticated motion models like rotation, scaling or affine. For those models
+the template is mapped into a candidate region of the image using a parametrized
+transformation $\varphi(\mathbf{x;y})$ so that each pixel has its parameter
+vector $\mathbf{y}$.
+
+Because the high number of parameter we can limit the search space to a region
+in the image around the previous object position so to exploit the general
+assumption that the object won't have moved far. Then we align the template with
+every possible candidate region and find the most similar accordingly to a
+similarity measure. For this we can use the sum of square differences (eq.
+\ref{eq:ssd}) or the (unnormalized) cross-correlation (eq. \ref{eq:xcorr}). The
+first one we have to minimize, while the other is to be maximized. From this
+operations we can have an estimate of the $\mathbf{y}$ parameters of motion.
+Doing this with a brute-force approach might be time consuming and only feasible
+for translational motion. To cope with this we can use Gradient Descent over the
+SSD to obtain the update rule
+\begin{equation}
+	\mathbf{y_{n+1}}=\mathbf{y_n}-(\nabla^2SSD)^{-1}\nabla SSD
+\end{equation}
+
+
+\subsection{Mean Shift Tracking}
+Mean shift is a non-parametric feature space analysis technique for locating the
+maxima of a density function. The assumption is that features are sampled from a
+\textit{probability distribution function}. The approach taken by Mean Shift is
+to perform \textit{gradient ascent} to find the path towards a maxima in the underlying
+PDF.
+
+The first step consists in using a \textit{Kernel Density Estimator} to obtain
+an estimation of the PDF of the form
+\begin{equation}
+	\tilde{f}(\mathbf{x})=\frac{1}{nh}\sum_{i=1}^{n}K\left(\frac{\mathbf{x-x_i}}{h}\right)
+				\label{eq:kernel-density-est}
+\end{equation}
+where the kernel $K$ could be the Epanechnikov, uniform or normal. We can then
+say that for a feature $\mathbf{z}$ we have a density function $q_\mathbf{z}$,
+while the target candidate centered at location $\mathbf{y}$ has the feature
+distributed accordingly to $p_\mathbf{z}(\mathbf{y})$. The problem is then to
+find the discrete location $\mathbf{y}$ whose associated density function
+$p_\mathbf{z}(\mathbf{y})$ is the most similar to the target density function
+$q_\mathbf{z}$.
+
+The measure used to compute this error is the \textit{Bhattacharyya
+Coefficient}, defined as
+\begin{equation}
+	\rho(\mathbf{y})\equiv\rho[p(\mathbf{y})q]=
+	\int\sqrt{p_{\mathbf{z}}(\mathbf{y})q_{\mathbf{z}}}d\mathbf{z}
+	\label{eq:bhatta-coeff}
+\end{equation}
+which acts as a similarity function and for a discrete density function
+(as is in sampled images) the integral becomes a summation.
+
 
 
 
