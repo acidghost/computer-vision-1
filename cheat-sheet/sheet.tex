@@ -8,7 +8,6 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage{appendix}
 
 \geometry{a4paper, margin={.3in, .3in}}
 
@@ -247,7 +246,7 @@ analytical form or using SVD.
 	additive noise (not salt and pepper);
 \paragraph{Laplacian of Gaussian} is a \textit{steerable} filter defined as:
 	\begin{equation} \label{eq:log}
-		\nabla^2 G = \frac{\partial G}{\partial x} + \frac{\partial G}{\partial y}
+		\nabla^2 G = \frac{\partial^2 G}{\partial x^2} + \frac{\partial^2 G}{\partial y^2}
 		= \left(\frac{x^2 + y^2}{\sigma^4} - \frac{2}{\sigma^2}\right) G
 	\end{equation}
 
@@ -456,29 +455,33 @@ intensity and contrast.
 
 
 
+\section{Tracking}
+
+
+
+
 \newpage
 
-\begin{appendices}
-	\section{Linear Algebra}
-	\paragraph{Trace} of a $n \times n$ matrix $\mathbf{A} = (a_{ij})$:
-	\begin{equation}
-		Tr(\mathbf{A}) = \sum_{i=1}^n a_{ii}
-	\end{equation}
-	\paragraph{Determinant} of a $2 \times 2$ matrix $\mathbf{A} = (a_{ij})$ is:
-	\begin{equation}
-		det(\mathbf{A}) = a_{11} a_{22} - a_{12} a_{21}
-	\end{equation}
-	for a $3 \times 3$ matrix is:
-	\begin{multline*}
-		det(\mathbf{A}) = a_{11} a_{22} a_{33} + a_{12} a_{23} a_{31} +
-		a_{13} a_{21} a_{32} + \\ - a_{13} a_{22} a_{31} - a_{12} a_{21}
-		a_{33} - a_{11} a_{23} a_{32}
-	\end{multline*}
-	\paragraph{Eigenvalues} of an $n \times n$ matrix $\mathbf{A}$ are the $n$
-	solutions to the \textit{characteristic equation} $det(\mathbf{A} - \lambda
-	\mathbf{I}) = 0$. The determinant of a square matrix is equal to the product
-	of its eigenvalues, and the trace is equal to the sum of the eigenvalues.
-\end{appendices}
+\appendix
+\section{Linear Algebra}
+\paragraph{Trace} of a $n \times n$ matrix $\mathbf{A} = (a_{ij})$:
+\begin{equation}
+	Tr(\mathbf{A}) = \sum_{i=1}^n a_{ii}
+\end{equation}
+\paragraph{Determinant} of a $2 \times 2$ matrix $\mathbf{A} = (a_{ij})$ is:
+\begin{equation}
+	det(\mathbf{A}) = a_{11} a_{22} - a_{12} a_{21}
+\end{equation}
+for a $3 \times 3$ matrix is:
+\begin{multline*}
+	det(\mathbf{A}) = a_{11} a_{22} a_{33} + a_{12} a_{23} a_{31} +
+	a_{13} a_{21} a_{32} + \\ - a_{13} a_{22} a_{31} - a_{12} a_{21}
+	a_{33} - a_{11} a_{23} a_{32}
+\end{multline*}
+\paragraph{Eigenvalues} of an $n \times n$ matrix $\mathbf{A}$ are the $n$
+solutions to the \textit{characteristic equation} $det(\mathbf{A} - \lambda
+\mathbf{I}) = 0$. The determinant of a square matrix is equal to the product
+of its eigenvalues, and the trace is equal to the sum of the eigenvalues.
 
 
 \end{document}
