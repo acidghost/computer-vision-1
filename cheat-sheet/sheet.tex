@@ -671,6 +671,39 @@ all weights associated with nodes in $A$. We could also consider
 $assoc(A,V)=volume(A)$ where it intends the sum of costs of all edges that touch $A$.
 
 
+\section{Feature-based Alignment}
+Feature-based alignment consists in estimating the motion between two or more
+sets of 2D or 3D points. We need to find transformation parameters that link
+the motion of a set of points matched in two frames.
+
+\subsection{RANSAC}
+RANdom SAmple Consensus is an iterative technique to estimate those transformation
+parameters. Input to the algorithm is a set of data which follow the model,
+called \textit{inliers} and a set of points that do not follow the model, called
+\textit{outliers}. For example the set of inliers and outliers may be a noisy
+representation of a line $y=ax+b$ where the task is to estimate $a$ and
+$b$, but the model could also be rotation, scaling or affine.
+
+For feature matching we are given two images with keypoints and descriptors for
+each one. The RANSAC loop then goes as follows:
+\begin{enumerate}
+	\item Select $s$ feature pairs at random
+	\item Estimate transformation parameters using $s$ pairs
+	\item Compute the transformation for each point using the parameters
+	\item Count the number of inliers $p$ where $SSD(p',p_t)<\varepsilon$
+		($p'$ is the supposed match and $p_t$ is $p$ transformed using params)
+	\item Keep the parameters that lead to the largest set of inliers
+	\item Re-estimate transformation using inliers only
+\end{enumerate}
+The required minimum number of iterations is given by the following relation
+\begin{equation}
+	N \ge \frac{\log(1-P)}{\log(1-p^s)}
+\end{equation}
+where $P$ is the total probability of success after $N$ iterations and
+$p$ is the probability that any given correspondence is valid (or the percentage
+of outliers).
+
+
 
 
 \newpage
