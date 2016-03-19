@@ -704,6 +704,24 @@ $p$ is the probability that any given correspondence is valid (or the percentage
 of outliers).
 
 
+\section{Object Recognition}
+There are different classes of \textit{recognition}: \textit{object detection}
+is scanning an image to determine where a match may occur, \textit{instance
+recognition} is trying to find a specific known object, \textit{category or
+class} recognition is trying to associate a label to an image.
+
+\subsection{Features for Recognition}
+The first step in every recognition system is that of extracting image features.
+To do so we compute a set of descriptors that characterize the keypoint or the
+image patch. Most techniques consist in computing histograms of some image
+property such as color texture or depth.
+
+\paragraph{Scale Invariant Feature Transform} are formed by computing the
+gradient at each pixel in a $4 \times 4$ window around a detected feature, using
+the appropriate level of the Gaussian pyramid at which the keypoint was
+detected.
+
+
 
 
 \newpage
