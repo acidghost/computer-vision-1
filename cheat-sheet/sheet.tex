@@ -716,10 +716,105 @@ To do so we compute a set of descriptors that characterize the keypoint or the
 image patch. Most techniques consist in computing histograms of some image
 property such as color texture or depth.
 
-\paragraph{Scale Invariant Feature Transform} are formed by computing the
-gradient at each pixel in a $4 \times 4$ window around a detected feature, using
+\paragraph{Scale Invariant Feature Transform} descriptors are formed by computing the
+gradient at each pixel in a local window around a detected feature, using
 the appropriate level of the Gaussian pyramid at which the keypoint was
-detected.
+detected. The first step is called \textit{orientation assignment} in which the
+gradient magnitude and orientation are computed using pixel differences on the
+Gaussian-smoothed image. An \textit{orientation histogram} with 36 bin is
+created with each bin covering 10 degrees. This step ensures invariance to
+rotation. Next step we compute the descriptor vectors which are highly
+distinctive and invariant to illumination changes. Here a set of orientation
+histograms is created for a $4 \times 4$ pixels neighborhood each with 8 bins.
+These histograms are computed from magnitudes and orientation values of samples
+in a $16 \times 16$ window around the keypoint such that each histogram contains
+samples from a $4 \times 4$ subregion of the original neighborhood region. The
+descriptor is then a vector of all values of these histograms. Since there are
+$4 \times 4 = 16$ histograms each with 8 bins, the descriptor vector has 128
+elements.
+
+\subsection{Bag of Features}
+This is a simple model for object detection (especially \textit{category
+detection}) that takes inspiration from the \textit{bag of word} model used in
+text classification and NLP. This algorithm simply computes the distribution
+(histogram) of visual words found in a query image and compared this
+distribution to those found in the training images.
+
+Image features are represented using descriptors such as SIFT. A good descriptor
+must be chosen carefully based on the application. Then a set of
+\textit{codewords} (analogous to text words in a document) and a \textit{codebook}
+(analogous to a word dictionary) are generated. A simple method to achieve this
+is to perform K-means clustering over all the vectors; codewords are then
+defined as the centers of the learned clusters. The number of clusters is the
+codebook size. The final step is learn a classifier such as Naive Bayes, SVM or
+Boosting that uses the frequencies of visual words of an image as features.
+
+Instead of quantizing feature vectors into visual words there's a technique for
+computing directly an approximate distance between two variably sized
+collections of feature vectors. It consists in binning the feature vectors into
+a multi resolution pyramid in feature space and counting the number of features
+that land in corresponding bins.
+
+\subsection{Face Detection}
+Before face recognition can be applied to a general image, the locations and
+sizes of any faces must be found. Of all the detectors currently in use, the
+\textit{Viola/Jones} detector is probably the best known and widely used. Their
+technique was the first to introduce \textit{boosting} (which involves training
+a series of increasingly discriminating simple classifiers and then blending
+their outputs) to the computer vision community.
+
+In Viola and Jones' face detector the features are differences of rectangular
+regions in the input patch. The computation of this filter can be done quickly
+using \textit{integral images} which compute a value at each pixel that is the
+sum of the pixel values above and to the left of it (inclusive). Let $A$,
+$B$, $C$ and $D$ be the values of the integral image at the corners of a
+rectangle. Then the sum of original image values within the rectangle can be
+computed as $A - B - C + D$.
+
+\subsection{Face Recognition}
+Some of the earliest approaches in face recognition involved finding distinctive
+image features, such as eyes, nose and mouth, and measuring the distance between
+these feature locations. More recent approaches rely on comparing gray-level
+images projected onto lower dimensional spaces called \textit{eigenfaces} and
+jointly modeling shape and appearence variations.
+
+\subsubsection{Eigenfaces}
+Eigenfaces rely on the observation that an arbitrary face image
+$\mathbf{x}$ can be compressed and reconstructed by starting with a mean image
+$\mathbf{m}$ and adding a small number of scaled signed images $\mathbf{u}_i$
+\begin{equation} \label{eq:eigenfaces-compression}
+	\tilde{\mathbf{x}}=\mathbf{m}+\sum_{i=0}^{M-1}a_i\mathbf{u}_i
+\end{equation}
+where the signed basis images can be derived from an ensemble of training images
+using \textit{principal component analysys} (PCA).
+
+Starting from a collection of training images ${\mathbf{x}_j}$ we compute the
+mean image $\mathbf{m}$ and the covariance matrix
+\begin{equation}
+	\mathbf{C}=\frac{1}{N}\sum_{j=0}^{N-1}\mathbf{(x_j-m)(x_j-m)^T}
+\end{equation}
+We can then apply an eigenvalue decomposition to represent this matrix as
+\begin{equation}
+	\mathbf{C}=\mathbf{U\Lambda U^T}=\sum_{i=0}^{N-1}\lambda_i\mathbf{u_iu_i^T}
+\end{equation}
+where the values $\lambda_i$ are the eigenvalues of the covariance matrix and
+the $\mathbf{u}_i$ are the eigenvectors. For generic pictures those vectors are
+called \textit{eigenpictures}, for faces those are the \textit{eigenfaces}.
+Two important properties are that the optimal coefficients can be computed from
+the eigenfaces
+\begin{equation}
+	a_i = (\mathbf{x - m}) \cdot \mathbf{u}_i
+\end{equation}
+and that the eigenvalues are sorted in decreasing order so truncating the
+approximation given in (\ref{eq:eigenfaces-compression}) at any point $M$ gives
+the best possible approximation between $\mathbf{x}$ and $\tilde{\mathbf{x}}$.
+The distance of a projected image $\tilde{\mathbf{x}}$ to a mean image
+$\mathbf{m}$ can be written as
+\begin{equation}
+	\text{DIFS}(\tilde{\mathbf{x}},\mathbf{m})=
+		||\mathbf{\tilde{x}-m}||=\sqrt{\sum_{i=0}^{M-1}a_i^2}
+\end{equation}
+where DIFS stands for distance in \textit{face space}.
 
 
 
