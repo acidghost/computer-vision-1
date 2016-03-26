@@ -10,11 +10,6 @@ if ~exist('dense', 'var')
 end
 
 
-[~, ~, imsizez] = size(im);
-if imsizez ~= 3
-    error('This image is grayscale')
-end
-
 descriptors = sift_descriptors(im, type, dense);
 if size(descriptors, 2) == 3
     descriptors = double([descriptors{1}', descriptors{2}', descriptors{3}']);
