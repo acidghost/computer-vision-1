@@ -16,7 +16,11 @@ if imsizez ~= 3
 end
 
 descriptors = sift_descriptors(im, type, dense);
-descriptors = double([descriptors{1}', descriptors{2}', descriptors{3}']);
+if size(descriptors, 2) == 3
+    descriptors = double([descriptors{1}', descriptors{2}', descriptors{3}']);
+else
+    descriptors = double([descriptors{1}', descriptors{1}', descriptors{1}']);
+end
 
 [ndesc, ~] = size(descriptors);
 [nvocs, ncols] = size(vocabulary);
