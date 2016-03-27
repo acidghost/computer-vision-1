@@ -12,11 +12,13 @@ if strcmp(color_space, 'opp');
     converted(:, :, 1) = (R - G) / sqrt(2);
     converted(:, :, 2) = (R + G - 2 * B) / sqrt(6);
     converted(:, :, 3) = (R + G + B) / sqrt(3);
+    
 elseif strcmp(color_space, 'rgb');
     % convert to rgb color space
     for i=1:3;
         converted(:, :, i) = double(img(:,:,i)) ./ double(img(:,:,1) + img(:,:,2) + img(:,:,3));
     end
+    
 elseif strcmp(color_space, 'hsv');
     % convert to HSV
     converted = rgb2hsv(img);
