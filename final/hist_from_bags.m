@@ -1,10 +1,14 @@
-function [ histValues ] = hist_from_bags( bags, vocabulary )
+function [ histValues ] = hist_from_bags( bags, vocabulary, show )
 %HIST_FROM_BAGS Compute histogram from raw BoVW
+
+if ~exist('show', 'var')
+    show = 0;
+end
 
 nbins = size(vocabulary, 1);
 histValues = zeros(size(bags, 1), nbins);
 
-binranges = 1:10;
+binranges = 1:nbins;
 
 for j = 1:size(bags, 1)
     bag = bags{j};
@@ -12,7 +16,7 @@ for j = 1:size(bags, 1)
     % h = histogram(bag, nbins);
     % histValues(j, :) = h.Values;
     
-    num_words = size(bag, 1)
+    num_words = size(bag, 1);
     bag_words = zeros(num_words, 1);
     
     % Compare words to vocabulary
@@ -28,11 +32,13 @@ for j = 1:size(bags, 1)
     [bincounts] = histc(bag_words,binranges);
     
     % Normalize values
-    histValues(j, :) = bincounts / num_words;
+    histValues(j, :) = bincounts / nbins;
     
-    figure
-    subplot (1, 2, 1);   hist(bag, nbins);
-    subplot (1, 2, 2);   bar(binranges, histValues(j, :), 'histc');
+    if show
+        figure
+        subplot (1, 2, 1);   hist(bag, nbins);
+        subplot (1, 2, 2);   bar(binranges, histValues(j, :), 'histc');
+    end
     %hist(bag_words);
 end
 

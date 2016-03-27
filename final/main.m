@@ -21,7 +21,7 @@ nlabels = length(labels);
 %% Define parameters
 sift_dense = 0;
 sift_type = 'RGB';
-nim_visual_voc = 2; % default 400
+nim_visual_voc = 200; % default 200
 
 
 %% Build visual vocabulary
@@ -68,7 +68,7 @@ end
 voc_features = double(cell2mat(voc_features));
 
 % Cluster all descriptors
-K = 10;
+K = 50; % default 400
 fprintf('\nClustering with K=%d\n', K)
 vocabulary = vl_kmeans(voc_features', K)';
 
@@ -76,26 +76,24 @@ vocabulary = vl_kmeans(voc_features', K)';
 %% Training
 
 % Create one SVM model per label
-fprintf('\n\nStarting training...\n\n')
 nim_train = nim_visual_voc;
-nbins = K;
+hists = cell(nim_train * nlabels, 1);
 models = cell(nlabels, 1);
 
-% Construct models
+% Load training data
 for i = 1:nlabels
     
     % Create training set
     label = labels{i};
     class_metadata = metadata.(label);
-    fprintf('Training model for %s\n\n', label)
 
-    % Get positive examples (exclude samples used for dictionary creation)
+    % Get examples (exclude samples used for dictionary creation)
     sample_idx = get_sample_excl(nim_train, class_metadata.train, dict_samples(i, :));
-    pos_bags = cell(nim_train, 1);
-    
+    bags = cell(nim_train, 1);
+
     for s = 1:numel(sample_idx)
         sample_id = sample_idx(s);
-        fprintf('Label: %s\t%d\n', label, s);
+        fprintf('Loading train: %s\t%d\n', label, s);
         
         % Read image in and get descriptors
         impath = sprintf(class_metadata.impath, 'train', sample_id);
@@ -103,49 +101,32 @@ for i = 1:nlabels
         im = im2double(im);
         
         % Find visual words present in image
-        pos_bags{s} = as_bag(im, vocabulary, sift_type, sift_dense);
-    end
-
-    % Get negative examples from each class
-    neg_bags = cell(nim_train * (nlabels - 1), 1);
-    
-    for j = 1:nlabels
-        neg_label = labels{j};
-        
-        % Ignore negative examples that are from your own label
-        if strcmp(neg_label, label)
-            continue
-        end
-        
-        % Get negative examples (excluding samples used for dictionary
-        % creation)
-        neg_class_metadata = metadata.(neg_label);
-        neg_sample_idx = get_sample_excl(nim_train, neg_class_metadata.train, dict_samples(j, :));
-        
-        
-        for s = 1:numel(neg_sample_idx)
-            sample_id = neg_sample_idx(s);
-            fprintf('Neg Label: %s\t%d\n', neg_label, s);
-            
-            % Read image in and get descriptors
-            impath = sprintf(neg_class_metadata.impath, 'train', sample_id);
-            im = imread(impath);
-            im = im2double(im);
-            
-            % Find visual word present in image (quantize features)
-            neg_bags{s} = as_bag(im, vocabulary, sift_type, sift_dense);
-        end
+        bags{s} = as_bag(im, vocabulary, sift_type, sift_dense);
     end
 
     % Compute normalized histograms
-    pos_hists = hist_from_bags(pos_bags, vocabulary);
-    neg_hists = hist_from_bags(neg_bags, vocabulary);
+    hists{i} = hist_from_bags(bags, vocabulary);
+end
 
-    
-
+for i = 1:nlabels
     % Train SVM
-    train_labels = [ones(size(pos_hists, 1), 1);...
+    pos_hists = hists{i};
+    neg_hists = cell(nlabels - 1, 1);
+    k = 1;
+    for j = 1:nlabels
+        if ~strcmp(labels{i}, labels{j})
+            neg_hists{k} = hists{j};
+            k = k + 1;
+        end
+    end
+    neg_hists = cell2mat(neg_hists);
+    temp = randperm(nim_train * (nlabels - 1));
+    neg_hists = neg_hists(temp(1:400), :);
+
+    train_set = [pos_hists; neg_hists];
+    train_labels = [ones(size(pos_hists, 1), 1) ;...
                     zeros(size(neg_hists, 1), 1)];
-    models{i} = svmtrain(train_labels, [pos_hists; neg_hists]);
+
+    models{i} = svmtrain(train_labels, train_set, '-s 2');
 end
 

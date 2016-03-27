@@ -3,7 +3,7 @@
 % matlab) and running make.m. Then run this script from the final folder.
 
 % remove ML toolbox from path
-% rmpath([matlabroot filesep 'toolbox' filesep 'stats' filesep 'stats']);
+rmpath([matlabroot filesep 'toolbox' filesep 'stats' filesep 'stats']);
 rmpath([matlabroot filesep 'toolbox' filesep 'bioinfo' filesep 'biolearning']);
 
 if ~exist('svmtrain', 'file')
