@@ -21,10 +21,36 @@ Selene Baez Santamaria (10985417) - Andrea Jemmett (11162929)}
 
 
 \section{Feature Extraction and Description}
+The first step in a Bag-of-Words image classification pipeline consists in
+extracting features from a collection of images to successively use them to
+build a visual vocabulary. To do this we extract SIFT descriptors from images
+using \textit{VLFeat}. We defined a function in \texttt{sift\_descriptors.m}
+that gets as input an image, the type of SIFT descriptors to extract (RGB, rgb
+or opponent) and whether descriptors need to be extracted from keypoints or
+densely and returns the extracted SIFT descriptors.
 
+To extract SIFT features from color images we first convert the input image in
+the requested color space. To do this we used a function that we created for
+another assignment, \texttt{convert\_color\_space.m}. Then for keypoint
+descriptors we find a set of keypoints on the intensity image and then we use
+those frames to get local descriptors in each separate channel. This way if we
+detect $n$ keypoints, the normal SIFT descriptors will have size 128, for color
+SIFT we will have $128*3$ so that the final descriptors matrix has size $n
+\times 128*3$.  For densely extracted features instead, we do not need to
+extract keypoints on the intensity image and features are extracted using a grid
+where the number of descriptors depends on the grid size.
 
 
 \section{Building Visual Vocabulary}
+Once we have a set of images represented as descriptors we use a clustering
+technique to group together the most similar to each other until we reach a
+stable set of $K$ clusters. We use \textit{Kmeans} through the use of the
+function \texttt{vl\_kmeans} offered by VLFeat. The clusters resulting from the
+operation become the set of words used in the vocabulary, so that $K$ controls
+the size of the vocabulary.
+
+
+\section{Features Quantization}
 
 
 
