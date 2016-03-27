@@ -14,9 +14,12 @@ for i = 1:nlabels
     % temp = randperm(nim_train * (nlabels - 1));
     % neg_hists = neg_hists(temp(1:400), :);
 
+    sample_idx = randperm(nim_train * nlabels);
     train_set = [pos_hists; neg_hists];
+    train_set = train_set(sample_idx, :);
     train_labels = [ones(size(pos_hists, 1), 1) ;...
-                    zeros(size(neg_hists, 1), 1)];
+                    repmat(-1, size(neg_hists, 1), 1)];
+    train_labels = train_labels(sample_idx);
 
-    models{i} = svmtrain(train_labels, train_set, '-s 2');
+    models{i} = svmtrain(train_labels, train_set, '-s 0 -t 0 -c 1');
 end
