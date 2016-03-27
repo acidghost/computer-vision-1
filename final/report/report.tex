@@ -51,7 +51,22 @@ the size of the vocabulary.
 
 
 \section{Features Quantization}
+Once we have a vocabulary of visual words we can transform an image as a
+collection of visual words. To do this we created two functions:
+\texttt{as\_bag.m} and \texttt{hist\_from\_bags.m}.
 
+The former gets as input an image, the vocabulary and SIFT parameters like the
+type (RGBSIFT, rgbSIFT and opponentSIFT) and if we want dense- or keypoint-based
+descriptors. For each feature vector extracted (of size 384) we find the visual
+word in the vocabulary that is the closest to the feature vector. We compute
+their difference and then the norm of the resulting, assigning the visual word
+in the vocabulary that has the lowest norm value.
+
+The latter is responsible of converting a collection of images represented as
+bag of visual words into normalized histograms of visual words count; that is we
+count how many times a visual word appears in a bag and then we normalize this
+number in the range $[0, 1]$; we do this in order to improve successive
+classification performance.
 
 
 \section{Classification}
