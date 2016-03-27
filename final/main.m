@@ -68,17 +68,16 @@ end
 voc_features = double(cell2mat(voc_features));
 
 % Cluster all descriptors
-K = 50; % default 400
+K = 100; % default 400
 fprintf('\nClustering with K=%d\n', K)
-vocabulary = vl_kmeans(voc_features', K)';
+vocabulary = vl_kmeans(voc_features', K, 'algorithm', 'ann')';
 
 
 %% Training
 
 % Create one SVM model per label
 nim_train = nim_visual_voc;
-hists = cell(nim_train * nlabels, 1);
-models = cell(nlabels, 1);
+bags_by_class = cell(nlabels, 1);
 
 % Load training data
 for i = 1:nlabels
@@ -103,30 +102,14 @@ for i = 1:nlabels
         % Find visual words present in image
         bags{s} = as_bag(im, vocabulary, sift_type, sift_dense);
     end
-
-    % Compute normalized histograms
-    hists{i} = hist_from_bags(bags, vocabulary);
+    
+    bags_by_class{i} = bags;
 end
 
+hists = cell(nlabels, 1);
 for i = 1:nlabels
-    % Train SVM
-    pos_hists = hists{i};
-    neg_hists = cell(nlabels - 1, 1);
-    k = 1;
-    for j = 1:nlabels
-        if ~strcmp(labels{i}, labels{j})
-            neg_hists{k} = hists{j};
-            k = k + 1;
-        end
-    end
-    neg_hists = cell2mat(neg_hists);
-    temp = randperm(nim_train * (nlabels - 1));
-    neg_hists = neg_hists(temp(1:400), :);
-
-    train_set = [pos_hists; neg_hists];
-    train_labels = [ones(size(pos_hists, 1), 1) ;...
-                    zeros(size(neg_hists, 1), 1)];
-
-    models{i} = svmtrain(train_labels, train_set, '-s 2');
+    bags = bags_by_class{i};
+    % Compute normalized histograms
+    hists{i} = hist_from_bags(bags, vocabulary);
 end
 

@@ -13,26 +13,28 @@ binranges = 1:nbins;
 for j = 1:size(bags, 1)
     bag = bags{j};
     
-    % h = histogram(bag, nbins);
-    % histValues(j, :) = h.Values;
-    
     num_words = size(bag, 1);
-    bag_words = zeros(num_words, 1);
+    
+%     h = histogram(bag, nbins);
+%     histValues(j, :) = h.Values / num_words;
+    
+    bag_words = zeros(nbins, 1);
     
     % Compare words to vocabulary
     for h = 1:num_words
         for i = 1:nbins
             if isequal(bag(h, :), vocabulary(i, :))
-                bag_words(h) = i;
+                bag_words(i) = bag_words(i) + 1;
             end
         end
     end
         
     % Compute frequency of visual words
-    [bincounts] = histc(bag_words,binranges);
+    % [bincounts] = histc(bag_words,binranges);
     
     % Normalize values
-    histValues(j, :) = bincounts / nbins;
+    % histValues(j, :) = bincounts / nbins;
+    histValues(j, :) = bag_words / num_words;
     
     if show
         figure
