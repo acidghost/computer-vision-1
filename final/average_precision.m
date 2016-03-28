@@ -7,8 +7,8 @@ for i = 1:size(predicted, 2)
     prediction = predicted(i);
     if numel(strfind(prediction.impath, label)) ~= 0
         fc = fc + 1;
+        s = s + (fc / i);
     end
-    s = s + (fc / i);
 end
 
 ap = s / classntest;
