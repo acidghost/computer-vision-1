@@ -47,4 +47,11 @@ for i = 1:nlabels
     predicted{i} = predicted{i}(sorted_idx);
 end
 
-% html_table = html_table_results(predicted, size(cell2mat(test_data), 1), nlabels);
+html_table = html_table_results(predicted, size(cell2mat(test_data), 1), nlabels);
+aps = zeros(nlabels, 1);
+for i = 1:nlabels
+    aps(i) = average_precision(predicted{i}, 50, labels{i});
+    fprintf('AP for %s is %.4f\n', labels{i}, aps(i));
+end
+map = sum(aps) / nlabels;
+fprintf('\nMAP is %.4f\n', map);
