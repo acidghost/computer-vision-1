@@ -1,3 +1,4 @@
+% Get testing data
 test_data = cell(nlabels, 1);
 test_data_impaths = cell(nlabels, 1);
 for i = 1:nlabels
@@ -18,34 +19,32 @@ for i = 1:nlabels
 end
 
 
-% this contains an array of struct for each label
-% each struct contains the impath, predicted label and the score
-% TODO: instead of creating a list for each CORRECT label
-% we should create a list for each classifier
+% This contains a list of impaths and decision values sorted by decreasing
+% decision value. Each element in predicted is the result of classification
+% using one classifier over all (200) images.
 predicted = cell(nlabels, 1);
 for i = 1:nlabels
     label = labels{i};
-    class_test_data = test_data{i};
-    class_impaths = test_data_impaths{i};
+    model = models{i};
     predicted{i} = struct();
 
-    for j = 1:size(class_test_data, 1)
-        test_im = class_test_data(j, :);
-        decision_values = cell(nlabels, 1);
-        for k = 1:nlabels
-            model = models{k};
+    offset = 1;
+    for j = 1:nlabels
+        class_test_data = test_data{j};
+        class_impaths = test_data_impaths{j};
 
-            [~, ~, decision_values{k}] = svmpredict(...
-                double(i == k), test_im, model, '-q');
+        for k = 1:size(class_test_data, 1)
+            test_im = class_test_data(k, :);
+            [~, ~, dv] = svmpredict(0, test_im, model, '-q');
+
+            predicted{i}(offset).impath = class_impaths{k};
+            predicted{i}(offset).score = dv;
+            offset = offset + 1;
         end
-        [dv, c] = max(cell2mat(decision_values));
-        fprintf('%s classified as %s\n', label, labels{c});
-
-        predicted{i}(j).impath = class_impaths{j};
-        predicted{i}(j).prediction = c;
-        predicted{i}(j).score = dv;
     end
-    
+
     [~, sorted_idx] = sort([predicted{i}.score], 'descend');
     predicted{i} = predicted{i}(sorted_idx);
 end
+
+% html_table = html_table_results(predicted, size(cell2mat(test_data), 1), nlabels);
