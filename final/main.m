@@ -68,9 +68,11 @@ end
 voc_features = double(cell2mat(voc_features));
 
 % Cluster all descriptors
-K = 100; % default 400
+K = 400; % default 400
 fprintf('\nClustering with K=%d\n', K)
+tic
 vocabulary = vl_kmeans(voc_features', K, 'algorithm', 'ann')';
+toc
 
 
 %% Training
