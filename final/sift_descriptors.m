@@ -44,8 +44,7 @@ end
 for z = 1:imsizez
     imc = im(:, :, z);
     if dense
-        % Note, need to presmooth it. dsift is equivalent to sift by default unless options are turned on 
-        [framesc, descs] = vl_dsift(imc);
+		[framesc, descs] = vl_dsift(imc, 'step', 30, 'size', 6);
     else
         % get descriptors for channel around keypoints
         [framesc, descs] = vl_sift(imc, 'Frames', keypoints);
